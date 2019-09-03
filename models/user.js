@@ -1,0 +1,13 @@
+const	mongoose = require('mongoose'),
+		passportLocalMongoose = require('passport-local-mongoose');
+
+//Schema setup
+const userSchema = new mongoose.Schema({
+	username: String,
+	password:String
+	
+});
+
+userSchema.plugin(passportLocalMongoose);
+// variable to use mongoose functions also creates collection for campgrounds
+module.exports = mongoose.model("User", userSchema);
