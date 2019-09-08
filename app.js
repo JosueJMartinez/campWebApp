@@ -95,7 +95,6 @@ app.use('/', authRoutes);
 
 //I am working herr right now
 app.get('/profile', middlewareObj.isLoggedIn, (req, res) => {
-	console.log('testing here');
 	res.render('profile');
 });
 
@@ -105,6 +104,6 @@ app.get('*', (req, res) => {
 });
 
 //server listens on here
-app.listen(process.env.PORT, process.env.IP, () => {
+app.listen(3000, process.env.IP, () => {
 	console.log('YelpCamp App started on port: '+process.env.PORT+ ' at IP: '+process.env.IP);
 });

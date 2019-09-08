@@ -33,13 +33,13 @@ middlewareObj.checkOwnership = (req, res, next) => {
 //check ownership of comments with logged in user
 middlewareObj.checkCommentOwnership = (req, res, next) => {
     if (req.isAuthenticated()) {
-        Comment.findById(req.params.comment_id, (err, foundComment) => {
+	    Comment.findById(req.params.comment_id, (err, foundComment) => {
             if (err || !foundComment) {
                 flashMessageObj.throwNewError(req, res, 'Could not find comment');
             }
             else {
                 if (foundComment.author.id.equals(req.user._id)) {
-                    middlewareObj.checkOwnership(req, res, next);
+                    next();
                 }
                 else {
                     flashMessageObj.throwNewError(req, res, 'Access denied');
@@ -62,6 +62,5 @@ middlewareObj.isLoggedIn = (req, res, next) => {
     req.flash('error', 'Please login');
     res.redirect('/login');
 };
-
 
 module.exports = middlewareObj;

@@ -62,7 +62,7 @@ router.post('/', middlewareObj.isLoggedIn, (req, res) => {
 //==============================================
 //EDIT route for comments
 router.get('/:comment_id/edit', middlewareObj.checkCommentOwnership, (req,res)=>{
-	//console.log(req.params);
+	console.log('test error here');
 	Comment.findById(req.params.comment_id,(err, foundComment)=>{
 		if(err || !foundComment){
 			flashMessageObj.throwNewError(req, res, 'Could not find comment');
@@ -74,7 +74,6 @@ router.get('/:comment_id/edit', middlewareObj.checkCommentOwnership, (req,res)=>
 //=============================================
 //UPDATE Route comments
 router.put('/:comment_id', middlewareObj.checkCommentOwnership,(req,res)=>{
-	//res.send('test');
 	Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment,(err, foundComment)=>{
 		if(err || !foundComment){
 			flashMessageObj.throwNewError(req, res, 'Could not update comment');
