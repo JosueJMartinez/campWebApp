@@ -9,6 +9,10 @@ const campGndSchema = new mongoose.Schema({
 	lat: Number,
 	lng: Number,
 	description: String,
+	createdAt: { 
+		type: Date, 
+		default: Date.now 
+	},
 	comments:[{
 		type:mongoose.Schema.Types.ObjectId,
 		ref:'Comment'

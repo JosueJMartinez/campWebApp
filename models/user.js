@@ -4,8 +4,11 @@ const	mongoose = require('mongoose'),
 //Schema setup
 const userSchema = new mongoose.Schema({
 	username: String,
-	password:String
-	
+	password:String,
+	createdAt: { 
+		type: Date, 
+		default: Date.now 
+	}
 });
 
 userSchema.plugin(passportLocalMongoose);

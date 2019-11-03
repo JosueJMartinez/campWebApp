@@ -50,6 +50,12 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 //=============================================================
 
+//============================================================================
+//required to add the moment package in the app to support time for posts
+//============================================================================
+app.locals.moment = require('moment');
+//console.log(app.locals.moment);
+
 //======================================
 //CONFIGURATION for PASSPORT AUTH
 //===================================

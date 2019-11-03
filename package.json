@@ -19,6 +19,7 @@
     "g": "^2.0.1",
     "locus": "^2.0.1",
     "method-override": "^3.0.0",
+    "moment": "^2.24.0",
     "mongoose": "^5.6.0",
     "node-geocoder": "^3.23.0",
     "nodemon": "^1.19.1",

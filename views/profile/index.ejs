@@ -1,5 +1,7 @@
 <%include ../partials/header %>
 
 <h1>This is the profile page of <%= currentUser.username%></h1>
-
+<h1>
+	Member since <%= currentUser.createdAt %>
+</h1>
 <%include ../partials/footer%>
