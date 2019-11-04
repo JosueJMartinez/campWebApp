@@ -85,7 +85,7 @@ app.use((req,res,next)=>{
 
 //================================================================================================================
 //connection to mongoDB and setup 
-mongoose.connect('mongodb+srv://josue:Rings218@cluster0-jkann.mongodb.net/yelpcamp?retryWrites=true&w=majority', {
+mongoose.connect(`mongodb+srv://${process.env.USERMONGODB}:${process.env.PWMONGODB}@cluster0-jkann.mongodb.net/yelpcamp?retryWrites=true&w=majority`, {
 	useNewUrlParser: true,
 	useCreateIndex: true
 }).then(() => {
