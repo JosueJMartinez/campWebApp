@@ -87,7 +87,8 @@ app.use((req,res,next)=>{
 //connection to mongoDB and setup 
 mongoose.connect(`mongodb+srv://${process.env.USERMONGODB}:${process.env.PWMONGODB}@cluster0-jkann.mongodb.net/yelpcamp?retryWrites=true&w=majority`, {
 	useNewUrlParser: true,
-	useCreateIndex: true
+	useCreateIndex: true,
+	useUnifiedTopology: true
 }).then(() => {
 	console.log('Connected to DB!');
 }).catch(err => {
