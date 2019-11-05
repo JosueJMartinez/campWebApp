@@ -19,7 +19,12 @@ router.get('/register',(req,res)=>{
 });
 
 router.post('/register',(req,res)=>{
-	User.register(new User({username:req.body.username}), req.body.password,(err,user)=>{
+	var newUser = new User({username:req.body.username})
+	if(req.body.adminCode==='RubADubDub'){
+		newUser.isAdmin = true;
+	}
+	User.register(newUser, req.body.password,(err,user)=>{
+		//eval(require('locus'));
 		if(err){
 			console.log(err);
 			flashMessageObj.errorCampgroundMessage(req, res, err);
