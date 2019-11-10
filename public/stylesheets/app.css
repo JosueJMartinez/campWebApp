@@ -6,6 +6,17 @@
     padding:0;
 }
 
+.new-link{
+	text-decoration:none;
+	color:#6C7A89; 
+}
+
+.new-link:hover, .new-link:focus{
+	text-decoration:none;
+	color:#A3C6C4;
+}
+
+
 div a+form {
     display:inline;
 }

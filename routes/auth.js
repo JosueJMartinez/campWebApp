@@ -3,13 +3,27 @@ const   express     	= require('express'),
         User			= require('../models/user'),
         passport    	= require('passport'),
         middlewareObj	= require('../middleware'),
-        flashMessageObj = require('../messages');
+        flashMessageObj = require('../messages'),
+		Campgrounds		= require('../models/campground.js'),
+	  	TOOLS			= require('../tools'),
+	  	tools			= new TOOLS();
         
 //root page route
 router.get('/', (req, res) => {
 
 	res.render('landing');
 });
+
+var checkCamps = (campgrounds) =>{
+	var boolVars ={};
+	if(tools.isEmpty(campgrounds)){
+
+		boolVars.haveCamps = false;
+	}else{
+		boolVars.haveCamps = true;
+	}
+	return boolVars;
+}
 
 //===============================================================
 //register routes
@@ -19,12 +33,12 @@ router.get('/register',(req,res)=>{
 });
 
 router.post('/register',(req,res)=>{
-	var newUser = new User({username:req.body.username})
+	var newUser = new User(req.body.user);
+	
 	if(req.body.adminCode==='RubADubDub'){
 		newUser.isAdmin = true;
 	}
 	User.register(newUser, req.body.password,(err,user)=>{
-		//eval(require('locus'));
 		if(err){
 			console.log(err);
 			flashMessageObj.errorCampgroundMessage(req, res, err);
@@ -35,8 +49,7 @@ router.post('/register',(req,res)=>{
 		});}
 	});
 });
-// http://localhost:8080
-//	https://6fc945b502f1413985737fab6d36812f.vfs.cloud9.us-east-2.amazonaws.com/*
+
 //=======================================================
 //login routes
 //======================================================
@@ -60,6 +73,39 @@ router.get('/logout',(req,res)=>{
 	req.logout();
 	req.flash('success','You are now logged out');
 	res.redirect('/campgrounds');
+});
+
+//===========================================
+//User profile
+router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
+	Campgrounds.find({'author.id':req.user.id}, (err, campgrounds)=>{
+				if(err|| !campgrounds){
+					flashMessageObj.throwNewError(req, res, 'Could not connect to campground try again');
+				}else{
+					var boolVars = checkCamps(campgrounds);
+					res.render('userprofile', { campgrounds: campgrounds, boolVars:boolVars });
+				}
+			});
+});
+
+//===============================================
+//route for other users profiles
+//===============================================
+router.get('/profiles/:id', (req, res) => {
+	User.findById(req.params.id, (err, user) => {
+		if (err || !user) {
+			flashMessageObj.throwNewError(req, res, 'Could not find missing profile try again later');
+		} else {
+			Campgrounds.find({'author.id':req.params.id}, (err, campgrounds)=>{
+				if(err|| !campgrounds){
+					flashMessageObj.throwNewError(req, res, 'Could not connect to campground try again');
+				}else{
+					var boolVars = checkCamps(campgrounds);
+					res.render('profiles', { user: user, campgrounds: campgrounds, boolVars: boolVars });
+				}
+			});
+		}
+	});
 });
 
 //================================================

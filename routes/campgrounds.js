@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
 			flashMessageObj.throwNewError(req, res, 'Could not connect to campgrounds try again later');
 		}
 		else {
-			res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page: 'campgrounds' });
+			res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user});
 		}
 	});
 });
@@ -96,7 +96,6 @@ router.get('/:id', (req, res) => {
 	//render show template with that campground
 	Campground.findById(req.params.id).populate('comments').exec((err, foundCampground) => {
 		if (err || !foundCampground) {
-
 			flashMessageObj.throwNewError(req, res, 'Could not find missing campground try again later if problem persists');
 		}
 		else {
@@ -111,7 +110,6 @@ router.get('/:id/edit', middlewareObj.checkOwnership, (req, res) => {
 	Campground.findById(req.params.id, (err, foundCampground) => {
 		res.render('campgrounds/edit', { campground: foundCampground });
 	});
-
 });
 
 //======================================================
@@ -142,7 +140,7 @@ router.put('/:id', middlewareObj.checkOwnership, (req, res) => {
 					res.redirect('/campgrounds/' + req.params.id);
 				}
 			});
-		})
+		});
 	}
 });
 

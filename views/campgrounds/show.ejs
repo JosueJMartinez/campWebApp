@@ -1,7 +1,7 @@
-	<%include ../partials/header %>
+<%include ../partials/header %>
 
-	<div class ='row'>
-		<div class ='col-md-2'>
+	<div class='row'>
+		<div class='col-md-2'>
 			<p class='lead'>
 				YelpCamp
 			</p>
@@ -11,29 +11,39 @@
 				<li class='list-group-item'>Info 3</li>
 			</div>
 			<div id='map'></div>
-		</div>	
-		<div class = 'col-md-10'>
+		</div>
+		<div class='col-md-10'>
 			<div class='thumbnail thumbnailShow'>
 				<img id='image' class='img-responsive' src='<%=campground.img%>'>
 				<div class='caption-full caption'>
 					<h4 class='pull-right'>
-						$<%= campground.price %> per night
+						$
+						<%= campground.price %> per night
 					</h4>
 					<h4>
-						<a><%=campground.title%></a>	
+							<%=campground.title%>
 					</h4>
 					<hr>
-					<p><%=campground.description%></p>
-					<p><em>Created by: <%=campground.author.username %>, <%= moment(campground.createdAt).fromNow()%></em></p>
-					
+					<p>
+						<%=campground.description%>
+					</p>
+					<p>
+						<a class='new-link' href='/profiles/<%=campground.author.id%>'>
+							<em>Created by:
+								<%=campground.author.username %>
+						</a>,
+						<%= moment(campground.createdAt).fromNow()%>
+							</em>
+					</p>
+
 					<div>
-						
+
 						<% if(currentUser && (currentUser.isAdmin||campground.author.id.equals(currentUser._id))){ %>
-							<a class='btn btn-xs btn-warning' href='/campgrounds/<%= campground._id%>/edit'>Edit</a> 
+							<a class='btn btn-xs btn-warning' href='/campgrounds/<%= campground._id%>/edit'>Edit</a>
 							<form action='/campgrounds/<%=campground._id%>?_method=DELETE' method='POST'>
 								<button class='btn btn-xs btn-danger'>Delete</button>
 							</form>
-						<% } %>
+							<% } %>
 					</div>
 				</div>
 			</div>
@@ -48,41 +58,45 @@
 					<div class='row'>
 						<div class='col-md-12'>
 							<strong>
-								<%=comment.author.username%>
+								<a class='new-link' href='/profiles/<%=comment.author.id%>'>
+									<%=comment.author.username%>
+								</a>
 							</strong>
-							<span class='pull-right'><%= moment(comment.createdAt).fromNow()%></span>
-							<p><%=comment.text%></p>
+							<span class='pull-right'>
+								<%= moment(comment.createdAt).fromNow()%>
+							</span>
+							<p>
+								<%=comment.text%>
+							</p>
 							<div>
 								<% if(currentUser && (currentUser.isAdmin||comment.author.id.equals(currentUser._id))){ %>
-									<a class='btn btn-xs btn-warning' 
-										href='/campgrounds/<%= campground._id%>/comments/<%=comment._id%>/edit'>
+									<a class='btn btn-xs btn-warning' href='/campgrounds/<%= campground._id%>/comments/<%=comment._id%>/edit'>
 										Edit
-									</a> 
+									</a>
 									<form action='/campgrounds/<%=campground._id%>/comments/<%=comment._id%>?_method=DELETE' method='POST'>
 										<button class='btn btn-xs btn-danger'>Delete</button>
 									</form>
-								<% } %>
+									<% } %>
 							</div>
 						</div>
 					</div>
-				<% }); %>
+					<% }); %>
 			</div>
 			<a href='/campgrounds'>Go back</a>
 		</div>
 	</div>
-	
-<script src='/scripts/show.js'></script>
-<script>
-	var c = {
-		title: "<%=campground.title %>",
-		lat: <%=campground.lat %>,
-		lng: <%=campground.lng %>,
-		location: "<%=campground.location %>",
-		description: "<%=campground.description %>"
-	}
-	LIBRARY.init(c);
-</script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXXF7ag3exLwQLuA13x4maEVtsch13uro&callback=LIBRARY.initMap"></script>
-	
 
-<%include ../partials/footer%>
+	<script src='/scripts/show.js'></script>
+	<script>
+		var c = {
+			title: "<%=campground.title %>",
+			lat: <%=campground.lat %>,
+			lng: <%=campground.lng %>,
+			location: "<%=campground.location %>",
+			description: "<%=campground.description %>"
+		}
+		LIBRARY.init(c);
+	</script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXXF7ag3exLwQLuA13x4maEVtsch13uro&callback=LIBRARY.initMap"></script>
+
+	<%include ../partials/footer%>

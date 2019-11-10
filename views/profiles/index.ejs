@@ -1,0 +1,60 @@
+<%include ../partials/header %>
+<div class="jumbotron">
+ 	<div class='row'>
+		<div class='col-md-8'>
+			<h1>Profile for: <%= user.username%></h1>
+			<div class='caption'>
+				<%= user.firstName %> <%= user.lastName %>
+				Member since <%= user.createdAt %>
+				Current email address: <a href='mailto:<%= user.email %>'><%= user.email %></a>
+			</div>
+		</div>
+		<div class='col-md-4 thumbnail'>
+			<img class='img-fluid' src='<%= user.avatar %>' alt='Avatar image' >
+		</div>	
+	</div>
+	
+</div>
+<h1>
+	
+</h1>
+<h1>
+	
+</h1>
+
+<h1>
+	
+</h1>
+<div class='row'>
+			<div class='col-lg-12'>
+				<h3>
+					Posted campgrounds
+				</h3>
+			</div>
+		</div>
+<div class='row text-center' style='display:flex; flex-wrap: wrap;'>
+	<%if(boolVars.haveCamps){%>
+		<% campgrounds.forEach(camp=>{ %>
+			<div class='col-md-3 col-sm-6'>
+				<div class='thumbnail'>
+					<img src='<%=camp.img%>'>
+					<div class='caption'>
+						<h4>
+							<%=camp.title%>
+						</h4>
+						<h5><a class='new-link' href='/profiles/<%=camp.author.id%>'><em>Created by: <%= camp.author.username%></em></a></h5>
+						<p>
+							<a href='/campgrounds/<%=camp._id%>' class='btn btn-primary'>More Info</a>
+						</p>
+					</div>
+				</div>
+			
+			</div>
+		<% }); %>
+	<% } else{ %>
+		<div class='col-md-3 col-sm-6'>
+				No Campgrounds found!
+		</div>
+	<% } %>
+</div>
+<%include ../partials/footer%>

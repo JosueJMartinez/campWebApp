@@ -22,7 +22,7 @@
 			</div>
 		</div>
 		<div class='row text-center' style='display:flex; flex-wrap: wrap;'>
-		<%campgrounds.forEach(camp=>{%>
+		<% campgrounds.forEach(camp=>{ %>
 			<div class='col-md-3 col-sm-6'>
 				<div class='thumbnail'>
 					<img src='<%=camp.img%>'>
@@ -30,7 +30,7 @@
 						<h4>
 							<%=camp.title%>
 						</h4>
-						<h5><em>Created by: <%= camp.author.username%></em></h5>
+						<h5><a class='new-link' href='/profiles/<%=camp.author.id%>'><em>Created by: <%= camp.author.username%></em></a></h5>
 						<p>
 							<a href='/campgrounds/<%=camp._id%>' class='btn btn-primary'>More Info</a>
 						</p>
