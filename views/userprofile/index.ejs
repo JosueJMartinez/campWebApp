@@ -1,57 +1,71 @@
 <%include ../partials/header %>
-<div class="jumbotron">
- 	<div class='row'>
-		<div class='col-md-8'>
-			<h1>Profile for: <%= currentUser.username%></h1>	
-		</div>
-		<div class='col-md-4 thumbnail'>
-			<img class='img-fluid' src='<%= currentUser.avatar %>' alt='Avatar image' >
-		</div>	
-	</div>
-	
-</div>
-<h1>
-	Hello <%= currentUser.firstName %> <%= currentUser.lastName %>
-</h1>
-<h1>
-	Member since <%= currentUser.createdAt %>
-</h1>
+	<div class="jumbotron">
+		<div class='row'>
+			<div class='col-md-8'>
+				<h1>Profile for:
+					<%= currentUser.username%>
+				</h1>
+				<div class='caption'>
+					<ul>
+						<li>
+							<%= currentUser.firstName %> <%= currentUser.lastName %>
+						</li>
+						<li>Member since
+							<%= currentUser.createdAt.getMonth() %>/<%=currentUser.createdAt.getDate()%>/<%=currentUser.createdAt.getFullYear()%>
+						</li>
+						<li>Current email address:
+							<a href='mailto:<%= currentUser.email %>'>
+								<%= currentUser.email %>
+							</a>
+						</li>
+					</ul>
 
-<h1>
-	Current email address: <%= currentUser.email %>
-</h1>
-
-<div class='row'>
-			<div class='col-lg-12'>
-				<h3>
-					My posted campgrounds
-				</h3>
-			</div>
-		</div>
-<div class='row text-center' style='display:flex; flex-wrap: wrap;'>
-	<%if(boolVars.haveCamps){%>	
-		<% campgrounds.forEach(camp=>{ %>
-			<div class='col-md-3 col-sm-6'>
-				<div class='thumbnail'>
-					<img src='<%=camp.img%>'>
-					<div class='caption'>
-						<h4>
-							<%=camp.title%>
-						</h4>
-						<h5><a class='new-link' href='/profiles/<%=camp.author.id%>'><em>Created by: <%= camp.author.username%></em></a></h5>
-						<p>
-							<a href='/campgrounds/<%=camp._id%>' class='btn btn-primary'>More Info</a>
-						</p>
-					</div>
 				</div>
-			
 			</div>
-		<% }); %>
-	<% } else{ %>
-			<div class='col-md-3 col-sm-6'>
-				No Campgrounds found!
-			
+			<div class='col-md-4 thumbnail'>
+				<img class='img-fluid' src='<%= currentUser.avatar %>' alt='Avatar image'>
 			</div>
-	<% } %>
-</div>
-<%include ../partials/footer%>
+		</div>
+
+	</div>
+
+	<div class='row'>
+		<div class='col-lg-12'>
+			<h3>
+				My posted campgrounds
+			</h3>
+		</div>
+	</div>
+	<div class='row text-center' style='display:flex; flex-wrap: wrap;'>
+		<%if(boolVars.haveCamps){%>
+			<% campgrounds.forEach(camp=>{ %>
+				<div class='col-md-3 col-sm-6'>
+					<div class='thumbnail'>
+						<img src='<%=camp.img%>'>
+						<div class='caption'>
+							<h4>
+								<%=camp.title%>
+							</h4>
+							<h5>
+								<a class='new-link' href='/profiles/<%=camp.author.id%>'>
+									<em>Created by:
+										<%= camp.author.currentUsername%>
+									</em>
+								</a>
+							</h5>
+							<p>
+								<a href='/campgrounds/<%=camp._id%>' class='btn btn-primary'>More Info</a>
+							</p>
+						</div>
+					</div>
+
+				</div>
+				<% }); %>
+					<% } else{ %>
+						<div class='col-md-3 col-sm-6'>
+							No Campgrounds found!
+
+						</div>
+						<% } %>
+	</div>
+	<%include ../partials/footer%>

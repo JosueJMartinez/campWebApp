@@ -28,7 +28,11 @@
 						<%=campground.description%>
 					</p>
 					<p>
-						<a class='new-link' href='/profiles/<%=campground.author.id%>'>
+						<% if(currentUser && (currentUser._id.equals(campground.author.id))){ %>
+								<a class='new-link' href='/userprofile'>
+						<% } else { %>
+								<a class='new-link' href='/profiles/<%=campground.author.id%>'>
+						<% } %>
 							<em>Created by:
 								<%=campground.author.username %>
 						</a>,
@@ -58,7 +62,11 @@
 					<div class='row'>
 						<div class='col-md-12'>
 							<strong>
-								<a class='new-link' href='/profiles/<%=comment.author.id%>'>
+								<% if(currentUser && (currentUser._id.equals(comment.author.id))){ %>
+									<a class='new-link' href='/userprofile'>
+								<% } else { %>
+									<a class='new-link' href='/profiles/<%=comment.author.id%>'>
+								<% } %>
 									<%=comment.author.username%>
 								</a>
 							</strong>

@@ -30,7 +30,13 @@
 						<h4>
 							<%=camp.title%>
 						</h4>
-						<h5><a class='new-link' href='/profiles/<%=camp.author.id%>'><em>Created by: <%= camp.author.username%></em></a></h5>
+						<h5>
+							<% if(currentUser && (currentUser._id.equals(camp.author.id))){ %>
+							<a class='new-link' href='/userprofile'>
+							<% } else { %>
+							<a class='new-link' href='/profiles/<%=camp.author.id%>'>
+							<% } %>	
+							<em>Created by: <%= camp.author.username%></em></a></h5>
 						<p>
 							<a href='/campgrounds/<%=camp._id%>' class='btn btn-primary'>More Info</a>
 						</p>
