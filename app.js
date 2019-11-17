@@ -10,7 +10,7 @@
 	8.	Update front-end GUI to be more presentable. Especially on mobile.
 	9.	Update bootstrap from 3.3.7 to 4.3 this is in correlation with number 8\
 	10.	More features need to be added. Possible like buttons work in a search bar somehow.
-	
+	11.	Add REACT.js
 */
 
 require('dotenv').config();
