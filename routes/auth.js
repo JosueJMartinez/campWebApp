@@ -18,11 +18,11 @@ var checkCamps = (campgrounds) =>{
 	var boolVars ={};
 	if(tools.isEmpty(campgrounds)){
 
-		boolVars.haveCamps = false;
+		return boolVars.haveCamps = false;
 	}else{
-		boolVars.haveCamps = true;
+		return boolVars.haveCamps = true;
 	}
-	return boolVars;
+	//return boolVars;
 }
 
 //===============================================================
@@ -79,7 +79,7 @@ router.get('/logout',(req,res)=>{
 //User profile
 router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
 	Campgrounds.find({'author.id':req.user.id}, (err, campgrounds)=>{
-				if(err|| !campgrounds){
+				if(err || !campgrounds){
 					flashMessageObj.throwNewError(req, res, 'Could not connect to campground try again');
 				}else{
 					var boolVars = checkCamps(campgrounds);
@@ -97,7 +97,7 @@ router.get('/profiles/:id', (req, res) => {
 			flashMessageObj.throwNewError(req, res, 'Could not find missing profile try again later');
 		} else {
 			Campgrounds.find({'author.id':req.params.id}, (err, campgrounds)=>{
-				if(err|| !campgrounds){
+				if(err || !campgrounds){
 					flashMessageObj.throwNewError(req, res, 'Could not connect to campground try again');
 				}else{
 					var boolVars = checkCamps(campgrounds);

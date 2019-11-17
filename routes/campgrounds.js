@@ -1,9 +1,9 @@
-const express = require('express'),
-	router = express.Router(),
-	Campground = require('../models/campground'),
-	middlewareObj = require('../middleware'),
-	flashMessageObj = require("../messages"),
-	NodeGeocoder = require('node-geocoder');
+const express 		= 	require('express'),
+	router 			= 	express.Router(),
+	Campground 		= 	require('../models/campground'),
+	middlewareObj 	= 	require('../middleware'),
+	flashMessageObj = 	require("../messages"),
+	NodeGeocoder 	= 	require('node-geocoder');
 //=========================================================
 //setup for geocoder
 var options = {

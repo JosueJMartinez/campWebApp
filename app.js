@@ -1,3 +1,18 @@
+/*
+	Things to do:
+	1.	Update server side to check for valid inputs if client side javascript is turned off
+	2.	Update sign up to have email and check if email is valid.
+	3.	Need to check if email can be set up as a key in MongoDB like SQL, if can need re-structure DB
+	4.	Need to work in AJAX to make site more responsive
+	5.	Need to update images to be actual images saved in DB instead of URLs to images
+	6.	Keep updating profile page for edits on information
+	7.	Add a double check for password to make sure they input the correct password if they changed it or initial sign up
+	8.	Update front-end GUI to be more presentable. Especially on mobile.
+	9.	Update bootstrap from 3.3.7 to 4.3 this is in correlation with number 8\
+	10.	More features need to be added. Possible like buttons work in a search bar somehow.
+	
+*/
+
 require('dotenv').config();
 
 const 	express 			= require('express'),
