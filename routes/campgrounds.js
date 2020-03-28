@@ -19,14 +19,34 @@ var geocoder = NodeGeocoder(options);
 //INDEX route - show all campgrounds
 //campgrounds page
 router.get('/', (req, res) => {
-	Campground.find({}, (err, campgrounds) => {
-		if (err || !campgrounds) {
-			flashMessageObj.throwNewError(req, res, 'Could not connect to campgrounds try again later');
-		}
-		else {
-			res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user});
-		}
-	});
+	//eval(require('locus'));
+	if(req.query.search){
+		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+		Campground.find({title: regex}, (err, campgrounds) => {
+			if (err || !campgrounds) {
+				flashMessageObj.throwNewError(req, res, 'Could not connect to campgrounds try again later');
+			}
+			else {
+				if(campgrounds.length < 1){
+					flashMessageObj.throwNewError(req, res, 'Could not find any campgrounds please search again','/campgrounds');
+				}else{
+					res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user});	
+				}
+				
+			}
+		});
+		
+	}else{
+		Campground.find({}, (err, campgrounds) => {
+			if (err || !campgrounds) {
+				flashMessageObj.throwNewError(req, res, 'Could not connect to campgrounds try again later');
+			}
+			else {
+				res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user});
+			}
+		});
+	}
+	
 });
 
 //=================================================================
@@ -52,7 +72,6 @@ router.post('/', middlewareObj.isLoggedIn, (req, res) => {
 			//console.log(!data.length);
 			
 			if (err || !data.length) {
-				console.log(err);
 				req.flash('error', 'Invalid address');
 				return res.redirect('back');
 			}
@@ -164,5 +183,9 @@ router.delete('/:id', middlewareObj.checkOwnership, (req, res) => {
 		}
 	});
 });
+
+function escapeRegex(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
 
 module.exports = router;

@@ -29,6 +29,20 @@
 			<div class="collapse navbar-collapse" id="navbar-collapse-1">
 				<ul class="nav navbar-nav">
             		<li class="<%= typeof page !== 'undefined' && page === 'campgrounds' ? 'active' : '' %>"><a href="/campgrounds">Home</a></li>
+					<li>
+						<p>
+							<form action='/campgrounds' method='GET' class='form-inline'>
+								<div class='form-group'>
+									<input class='form-control' type='text' name='search' placeholder='Search for Campground...'>
+									<button class='btn btn-primary'>
+										Search
+									</button>
+
+								</div>
+							</form>
+						</p>
+					</li>
+					
         		</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<%if(!currentUser){%>
