@@ -8,9 +8,9 @@
 	6.	Keep updating profile page for edits on information
 	7.	Add a double check for password to make sure they input the correct password if they changed it or initial sign up
 	8.	Update front-end GUI to be more presentable. Especially on mobile.
-	9.	Update bootstrap from 3.3.7 to 4.3 this is in correlation with number 8\
+	9.	Update bootstrap from 3.3.7 to 4.3 this is in correlation with number 8
 	10.	More features need to be added. Possible like buttons work in a search bar somehow.
-	11.	Add REACT.js
+	11.	Add REACT.js probably tied with 8 and 9
 */
 
 require('dotenv').config();

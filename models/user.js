@@ -3,19 +3,21 @@ const	mongoose = require('mongoose'),
 
 //Schema setup
 const userSchema = new mongoose.Schema({
-	username: String,
+	username: {type: String, unique: true, required: true},
 	password:String,
-	avatar:{
+	avatar: {
 		type:String,
 		default:'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80'
 	},
 	firstName:String,
 	lastName:String,
-	email:String,
+	email: {type: String, unique: true, required: true},
 	createdAt: { 
 		type: Date, 
 		default: Date.now 
 	},
+	resetPasswordToken: String,
+	resetPasswordExpires: Date,
 	isAdmin:{
 		type:Boolean,
 		default:false
