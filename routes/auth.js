@@ -55,8 +55,10 @@ router.get('/register',(req,res)=>{
 });
 
 router.post('/register',(req,res)=>{
-	var newUser = new User(req.body.user);
-	
+	var userWeb = req.body.user;
+	userWeb.username = req.body.username;
+	var newUser = new User(userWeb);
+	//eval(require('locus'));
 	if(req.body.adminCode==='RubADubDub'){
 		newUser.isAdmin = true;
 	}
