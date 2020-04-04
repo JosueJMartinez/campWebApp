@@ -5,14 +5,15 @@ const   express     	= require('express'),
         middlewareObj	= require('../middleware'),
         flashMessageObj = require('../messages'),
 		Campgrounds		= require('../models/campground.js'),
-	  	TOOLS			= require('../tools'),
-	  	tools			= new TOOLS(),
-		async 			= require('async'),
-		nodemailer 		= require('nodemailer'),
+		TOOLS			= require('../tools'),
+		Token			= require('../models/token.js'),
+		tools			= new TOOLS(),
+		async 			= require('async');
+
+const	nodemailer 		= require('nodemailer'),
 		crypto 			= require('crypto'),
 		{ google } 		= require("googleapis"),
 		OAuth2 			= google.auth.OAuth2;
-
 		
 //============================================
 //set up OAUTH client to send emails
@@ -37,7 +38,7 @@ router.get('/', (req, res) => {
 });
 
 var checkCamps = (campgrounds) =>{
-	var boolVars ={};
+	var boolVars = {};
 	if(tools.isEmpty(campgrounds)){
 
 		return boolVars.haveCamps = false;
@@ -57,22 +58,121 @@ router.get('/register',(req,res)=>{
 router.post('/register',(req,res)=>{
 	var userWeb = req.body.user;
 	userWeb.username = req.body.username;
-	var newUser = new User(userWeb);
-	//eval(require('locus'));
-	if(req.body.adminCode==='RubADubDub'){
-		newUser.isAdmin = true;
+	if(req.body.password !== req.body.rePassword){
+		flashMessageObj.errorCampgroundMessage(req, res, {message: "Passwords do not match up"});
+	}else{
+		User.findOne({email:userWeb.email},(err, user)=>{
+			if(user){
+				console.log('user exists');
+				flashMessageObj.errorCampgroundMessage(req, res, {message:'Already have an email that exists'});
+			}else{
+				if(err){
+					res.redirect('back');
+				}
+				var newUser = new User(userWeb);
+
+				//eval(require('locus'));
+				if(req.body.adminCode==='RubADubDub'){
+					newUser.isAdmin = true;
+				}
+				User.register(newUser, req.body.password,(err,user)=>{
+					if(err){
+						console.log(err);
+						flashMessageObj.errorCampgroundMessage(req, res, err);
+					}else{
+						var token = new Token({
+							_userId: user._id,
+							token: crypto.randomBytes(16).toString('hex')
+						});
+						token.save(err =>{
+							if(err){return errorCampgroundMessage(req, res, err);}
+							
+							const accessToken = oauth2Client.getAccessToken();
+							console.log(accessToken);
+
+
+
+							//set up mail transport to send emails
+							const smtpTransport = nodemailer.createTransport({
+								service: 'Gmail',
+								auth:{
+									  type: "OAuth2",
+									  user: "josuedevtesting@gmail.com", 
+									  clientId: process.env.EMAILCLIENTID,
+									  clientSecret: process.env.EMAILCLIENTSECRET,
+									  refreshToken: process.env.REFRESHTOKEN,
+									  accessToken: accessToken
+								}
+							});
+
+
+							smtpTransport.verify(function(error, success) {
+								if (error) {
+									console.log(error);
+									console.log('test2');
+								} else {
+									console.log('Server is ready to take our messages');
+								}
+							});
+
+							var mailOptions = {
+								to: user.email,
+								from: process.env.EMAIL,
+								subject: 'Account Verification for YelpCamp',
+								text: 'Hello,\n\n' +
+								  'Please verify your account by clicking on this link: \n http:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n'
+							};
+							smtpTransport.sendMail(mailOptions, function(err) {
+								if(err){
+									return errorCampgroundMessage(req, res, err);
+								}
+								req.flash('success', 'A verification email has been sent to '+ user.email+'.');
+								res.redirect('/campgrounds');
+							});
+							
+						})
+					}
+					// passport.authenticate('local')( req, res, ()=>{
+					// 	req.flash('success','Welcome to Yelpcamp '+user.username+"!");
+					// 	res.redirect('/campgrounds');
+					// });}
+				});
+			}
+		});
 	}
-	User.register(newUser, req.body.password,(err,user)=>{
-		if(err){
-			console.log(err);
-			flashMessageObj.errorCampgroundMessage(req, res, err);
-		}else{
-		passport.authenticate('local')( req, res, ()=>{
-			req.flash('success','Welcome to Yelpcamp '+user.username+"!");
-			res.redirect('/campgrounds');
-		});}
-	});
 });
+
+router.get('/confirmation/:token', (req, res, next)=>{
+	// req.assert('email', 'Email is not valid').isEmail();
+	// req.assert('email', 'Email cannot be blank').notEmpty();
+	// req.assert('token', 'Token cannot be blank').notEmpty();
+	// req.sanitize('email').normalizeEmail({ remove_dots: false });
+ 
+	// // Check for validation errors    
+	// var errors = req.validationErrors();
+	// if (errors) return res.status(400).send(errors);
+ 
+    // Find a matching token
+    Token.findOne({ token: req.params.token }, function (err, token) {
+        if (!token) return flashMessageObj.errorCampgroundMessage(req, res, {message:'We were unable to find a valid token. Your token my have expired.' });
+ 		//eval(require('locus'));
+        // If we found a token, find a matching user
+        User.findOne({ _id: token._userId}, function (err, user) {
+			
+            if (!user) return flashMessageObj.errorCampgroundMessage(req, res, {message:'We were unable to find a user for this token.' });
+            if (user.isVerified) return flashMessageObj.errorCampgroundMessage(req, res, {message:'This user has already been verified.' });
+ 
+            // Verify and save the user
+            user.isVerified = true;
+            user.save(function (err) {
+                if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err); }
+				req.flash('success','Account has been verified, please login');
+                res.redirect('/login');
+            });
+        });
+    });
+});
+
 
 //=======================================================
 //login routes
@@ -82,13 +182,31 @@ router.get('/login',(req,res)=>{
 });
 
 
-router.post('/login', passport.authenticate('local',{
-	successRedirect:'/campgrounds',
-	failureRedirect:'/login',
-	successFlash:'Welcome back!',
-	failureFlash:true
-	})
-);
+router.post('/login', (req,res,next) => {
+	passport.authenticate('local', function(err, user, info) {
+		if (err) { 
+			return flashMessageObj.errorCampgroundMessage(req, res, err); 
+		}
+		if (!user) { 
+			return flashMessageObj.errorCampgroundMessage(req, res, {message: 'Account does not exist'}); 
+		}
+		if(!user.isVerified){ 
+			return flashMessageObj.errorCampgroundMessage(req, res, {message: 'Account is not verified'});
+		}
+		req.logIn(user, function(err) {
+			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err); }
+			return res.redirect('/campgrounds');
+		});
+	  })(req, res, next);
+	//if(req.body)
+	// passport.authenticate('local',{
+	// 	successRedirect:'/campgrounds',
+	// 	failureRedirect:'/login',
+	// 	successFlash:'Welcome back!',
+	// 	failureFlash:true
+	// })
+	
+});
 
 //===================================================
 //logout routes
