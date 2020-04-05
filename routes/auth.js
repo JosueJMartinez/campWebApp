@@ -86,49 +86,49 @@ router.post('/register',(req,res)=>{
 						});
 						token.save(err =>{
 							if(err){return errorCampgroundMessage(req, res, err);}
+							sendEmail({user, value:3, token},req, res);
+							// const accessToken = oauth2Client.getAccessToken();
+							// console.log(accessToken);
 							
-							const accessToken = oauth2Client.getAccessToken();
-							console.log(accessToken);
-
 
 
 							//set up mail transport to send emails
-							const smtpTransport = nodemailer.createTransport({
-								service: 'Gmail',
-								auth:{
-									  type: "OAuth2",
-									  user: "josuedevtesting@gmail.com", 
-									  clientId: process.env.EMAILCLIENTID,
-									  clientSecret: process.env.EMAILCLIENTSECRET,
-									  refreshToken: process.env.REFRESHTOKEN,
-									  accessToken: accessToken
-								}
-							});
+							// const smtpTransport = nodemailer.createTransport({
+							// 	service: 'Gmail',
+							// 	auth:{
+							// 		  type: "OAuth2",
+							// 		  user: "josuedevtesting@gmail.com", 
+							// 		  clientId: process.env.EMAILCLIENTID,
+							// 		  clientSecret: process.env.EMAILCLIENTSECRET,
+							// 		  refreshToken: process.env.REFRESHTOKEN,
+							// 		  accessToken: accessToken
+							// 	}
+							// });
 
 
-							smtpTransport.verify(function(error, success) {
-								if (error) {
-									console.log(error);
-									console.log('test2');
-								} else {
-									console.log('Server is ready to take our messages');
-								}
-							});
-
-							var mailOptions = {
-								to: user.email,
-								from: process.env.EMAIL,
-								subject: 'Account Verification for YelpCamp',
-								text: 'Hello,\n\n' +
-								  'Please verify your account by clicking on this link: \n http:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n'
-							};
-							smtpTransport.sendMail(mailOptions, function(err) {
-								if(err){
-									return errorCampgroundMessage(req, res, err);
-								}
-								req.flash('success', 'A verification email has been sent to '+ user.email+'.');
-								res.redirect('/campgrounds');
-							});
+							// smtpTransport.verify(function(error, success) {
+							// 	if (error) {
+							// 		console.log(error);
+							// 		console.log('test2');
+							// 	} else {
+							// 		console.log('Server is ready to take our messages');
+							// 	}
+							// });
+							// var mailOptions = {
+							// 	to: user.email,
+							// 	from: process.env.EMAIL,
+							// 	subject: 'Account Verification for YelpCamp',
+							// 	text: 'Hello,\n\n' +
+							// 	  'Please verify your account by clicking on this link: \n http:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n'
+							// };
+							// smtpTransport.sendMail(mailOptions, function(err) {
+							// 	if(err){
+							// 		return errorCampgroundMessage(req, res, err);
+							// 	}
+							// 	req.flash('success', 'A verification email has been sent to '+ user.email+'.');
+							// 	res.redirect('/campgrounds');
+							// });
+							
 							
 						})
 					}
@@ -246,48 +246,7 @@ router.post('/forgot', (req, res, next)=>{
 		});
 	},
 	(token, user, done) => {
-		
-		const accessToken = oauth2Client.getAccessToken();
-		console.log(accessToken);
-		
-		//set up mail transport to send emails
-		const smtpTransport = nodemailer.createTransport({
-			service: 'Gmail',
-			auth:{
-				  type: "OAuth2",
-				  user: "josuedevtesting@gmail.com", 
-				  clientId: process.env.EMAILCLIENTID,
-				  clientSecret: process.env.EMAILCLIENTSECRET,
-				  refreshToken: process.env.REFRESHTOKEN,
-				  accessToken: accessToken
-			}
-		});
-
-
-		smtpTransport.verify(function(error, success) {
-			if (error) {
-				console.log(error);
-				console.log('test2');
-			} else {
-				console.log('Server is ready to take our messages');
-			}
-		});
-	
-		
-		var mailOptions = {
-			from:process.env.EMAIL,
-			to: user.email, // list of receivers
-			subject: 'Reset Password for YelpCamp', // Subject line
-			text: 'You are reseting your password'+'\n\n'+
-			'http://'+ req.headers.host + '/reset/'+ token + '\n\n' +
-			'testing this feature at the moment', // plain text body
-		};
-		
-		smtpTransport.sendMail(mailOptions, err =>{
-			console.log('email sent');
-			req.flash('success', 'An email has been sent to '+ user.email + ' with further instructions.');
-			done(err, 'done');
-		});
+		sendEmail({token, user, done, value:1}, req);
 	}],
 	err => {
 		if(err) return next(err);
@@ -333,46 +292,7 @@ router.post('/reset/:token', function(req, res) {
       		});
     	},
 		function(user, done) {
-			
-			const accessToken = oauth2Client.getAccessToken();
-			console.log(accessToken);
-			
-
-
-			//set up mail transport to send emails
-			const smtpTransport = nodemailer.createTransport({
-				service: 'Gmail',
-				auth:{
-					  type: "OAuth2",
-					  user: "josuedevtesting@gmail.com", 
-					  clientId: process.env.EMAILCLIENTID,
-					  clientSecret: process.env.EMAILCLIENTSECRET,
-					  refreshToken: process.env.REFRESHTOKEN,
-					  accessToken: accessToken
-				}
-			});
-
-
-			smtpTransport.verify(function(error, success) {
-				if (error) {
-					console.log(error);
-					console.log('test2');
-				} else {
-					console.log('Server is ready to take our messages');
-				}
-			});
-
-      		var mailOptions = {
-				to: user.email,
-				from: process.env.EMAIL,
-				subject: 'Your password has been changed',
-				text: 'Hello,\n\n' +
-				  'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
-			};
-      		smtpTransport.sendMail(mailOptions, function(err) {
-				req.flash('success', 'Success! Your password has been changed.');
-				done(err);
-      		});
+			sendEmail({user, done, value:2}, req);
     	}
   	], function(err) {
     	res.redirect('/campgrounds');
@@ -419,5 +339,80 @@ router.get('/profiles/:id', (req, res) => {
 router.get('/secret', middlewareObj.isLoggedIn, (req, res)=>{
 	res.render('secret');	
 });
+
+sendEmail = (inputs, req, res) =>{
+	
+	const accessToken = oauth2Client.getAccessToken();
+	console.log(accessToken);
+
+	//set up mail transport to send emails
+	const smtpTransport = nodemailer.createTransport({
+		service: 'Gmail',
+		auth:{
+			  type: "OAuth2",
+			  user: "josuedevtesting@gmail.com", 
+			  clientId: process.env.EMAILCLIENTID,
+			  clientSecret: process.env.EMAILCLIENTSECRET,
+			  refreshToken: process.env.REFRESHTOKEN,
+			  accessToken: accessToken
+		}
+	});
+
+
+	smtpTransport.verify(function(error, success) {
+		if (error) {
+			console.log(error);
+			console.log('test2');
+		} else {
+			console.log('Server is ready to take our messages');
+		}
+	});
+
+
+	
+	if(inputs.value === 1){
+		var mailOptions = {
+			from:process.env.EMAIL,
+			to: inputs.user.email, // list of receivers
+			subject: 'Reset Password for YelpCamp', // Subject line
+			text: 'You are reseting your password'+'\n\n'+
+			'http://'+ req.headers.host + '/reset/'+ inputs.token + '\n\n' +
+			'testing this feature at the moment', // plain text body
+		};
+		smtpTransport.sendMail(mailOptions, err =>{
+			console.log('email sent');
+			req.flash('success', 'An email has been sent to '+ inputs.user.email + ' with further instructions.');
+			inputs.done(err, 'done');
+		});
+	}else if(inputs.value === 2){
+		var mailOptions = {
+			to: inputs.user.email,
+			from: process.env.EMAIL,
+			subject: 'Your password has been changed',
+			text: 'Hello,\n\n' +
+			  'This is a confirmation that the password for your account ' + inputs.user.email + ' has just been changed.\n'
+		};
+		smtpTransport.sendMail(mailOptions, function(err) {
+			req.flash('success', 'Success! Your password has been changed.');
+			inputs.done(err);
+		});
+	}else if(inputs.value === 3){
+		var mailOptions = {
+			to: inputs.user.email,
+			from: process.env.EMAIL,
+			subject: 'Account Verification for YelpCamp',
+			text: 'Hello,\n\n' +
+			  'Please verify your account by clicking on this link: \n http:\/\/' + req.headers.host + '\/confirmation\/' + inputs.token.token + '.\n'
+		};
+		smtpTransport.sendMail(mailOptions, function(err) {
+			if(err){
+				return errorCampgroundMessage(req, res, err);
+			}
+			req.flash('success', 'A verification email has been sent to '+ inputs.user.email+'.');
+			res.redirect('/campgrounds');
+		});
+	}
+
+}
 
 module.exports = router;
