@@ -55,13 +55,16 @@ router.get('/register',(req,res)=>{
 	res.render('auth/register', {page:'register'});
 });
 
-router.post('/register',(req,res)=>{
+router.post('/register',(req, res)=>{
+	// eval(require('locus'));
+
 	var userWeb = req.body.user;
 	userWeb.username = req.body.username;
 	if(req.body.password !== req.body.rePassword){
 		flashMessageObj.errorCampgroundMessage(req, res, {message: "Passwords do not match up"});
 	}else{
 		User.findOne({email:userWeb.email},(err, user)=>{
+			// eval(require('locus'));
 			if(user){
 				console.log('user exists');
 				flashMessageObj.errorCampgroundMessage(req, res, {message:'Already have an email that exists'});
@@ -87,72 +90,19 @@ router.post('/register',(req,res)=>{
 						token.save(err =>{
 							if(err){return errorCampgroundMessage(req, res, err);}
 							sendEmail({user, value:3, token},req, res);
-							// const accessToken = oauth2Client.getAccessToken();
-							// console.log(accessToken);
-							
-
-
-							//set up mail transport to send emails
-							// const smtpTransport = nodemailer.createTransport({
-							// 	service: 'Gmail',
-							// 	auth:{
-							// 		  type: "OAuth2",
-							// 		  user: "josuedevtesting@gmail.com", 
-							// 		  clientId: process.env.EMAILCLIENTID,
-							// 		  clientSecret: process.env.EMAILCLIENTSECRET,
-							// 		  refreshToken: process.env.REFRESHTOKEN,
-							// 		  accessToken: accessToken
-							// 	}
-							// });
-
-
-							// smtpTransport.verify(function(error, success) {
-							// 	if (error) {
-							// 		console.log(error);
-							// 		console.log('test2');
-							// 	} else {
-							// 		console.log('Server is ready to take our messages');
-							// 	}
-							// });
-							// var mailOptions = {
-							// 	to: user.email,
-							// 	from: process.env.EMAIL,
-							// 	subject: 'Account Verification for YelpCamp',
-							// 	text: 'Hello,\n\n' +
-							// 	  'Please verify your account by clicking on this link: \n http:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n'
-							// };
-							// smtpTransport.sendMail(mailOptions, function(err) {
-							// 	if(err){
-							// 		return errorCampgroundMessage(req, res, err);
-							// 	}
-							// 	req.flash('success', 'A verification email has been sent to '+ user.email+'.');
-							// 	res.redirect('/campgrounds');
-							// });
-							
-							
 						})
 					}
-					// passport.authenticate('local')( req, res, ()=>{
-					// 	req.flash('success','Welcome to Yelpcamp '+user.username+"!");
-					// 	res.redirect('/campgrounds');
-					// });}
+
 				});
 			}
 		});
 	}
 });
+//===============================================================
+//Confirmation routes used to confirm account with an email
+//===============================================================
+router.get('/confirmation/:token', (req, res, err)=>{
 
-router.get('/confirmation/:token', (req, res, next)=>{
-	// req.assert('email', 'Email is not valid').isEmail();
-	// req.assert('email', 'Email cannot be blank').notEmpty();
-	// req.assert('token', 'Token cannot be blank').notEmpty();
-	// req.sanitize('email').normalizeEmail({ remove_dots: false });
- 
-	// // Check for validation errors    
-	// var errors = req.validationErrors();
-	// if (errors) return res.status(400).send(errors);
- 
-    // Find a matching token
     Token.findOne({ token: req.params.token }, function (err, token) {
         if (!token) return flashMessageObj.errorCampgroundMessage(req, res, {message:'We were unable to find a valid token. Your token my have expired.' });
  		//eval(require('locus'));
@@ -173,6 +123,22 @@ router.get('/confirmation/:token', (req, res, next)=>{
     });
 });
 
+router.get('/resend', (req, res, err)=>{
+	if(err) return flashMessageObj.errorCampgroundMessage(req, res, err);
+	User.findOne({ email: req.body.email }, function (err, user) {
+		if (!user) return flashMessageObj.errorCampgroundMessage(req, res,{ message: 'We were unable to find a user with that email.' });
+		if (user.isVerified) return flashMessageObj.errorCampgroundMessage(req, res,{ message: 'This account has already been verified. Please log in.' });
+
+		// Create a verification token, save it, and send email
+		var token = new Token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') });
+
+		// Save the token
+		token.save(function (err) {
+			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, {message: err.message }); }
+			sendEmail({user, value:3, token},req, res);
+		});
+	});
+});
 
 //=======================================================
 //login routes
@@ -197,15 +163,7 @@ router.post('/login', (req,res,next) => {
 			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err); }
 			return res.redirect('/campgrounds');
 		});
-	  })(req, res, next);
-	//if(req.body)
-	// passport.authenticate('local',{
-	// 	successRedirect:'/campgrounds',
-	// 	failureRedirect:'/login',
-	// 	successFlash:'Welcome back!',
-	// 	failureFlash:true
-	// })
-	
+	  })(req, res, next);	
 });
 
 //===================================================
@@ -341,7 +299,6 @@ router.get('/secret', middlewareObj.isLoggedIn, (req, res)=>{
 });
 
 sendEmail = (inputs, req, res) =>{
-	
 	const accessToken = oauth2Client.getAccessToken();
 	console.log(accessToken);
 
@@ -369,7 +326,6 @@ sendEmail = (inputs, req, res) =>{
 	});
 
 
-	
 	if(inputs.value === 1){
 		var mailOptions = {
 			from:process.env.EMAIL,
