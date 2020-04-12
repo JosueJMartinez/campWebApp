@@ -1,3 +1,4 @@
+//used to get map to load in show page for campground
 var LIBRARY =
 	LIBRARY ||
 	(function() {

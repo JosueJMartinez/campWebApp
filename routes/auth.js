@@ -78,14 +78,14 @@ router.post('/register', upload.single('avatar'), (req, res)=>{
 	var userWeb = req.body.user;
 	userWeb.username = req.body.username;
 	if(req.body.password !== req.body.rePassword){
-		flashMessageObj.errorCampgroundMessage(req, res, {message: "Passwords do not match up"});
+		flashMessageObj.errorCampgroundMessage(req, res, "Passwords do not match up");
 	}else{
 		User.findOne({email:userWeb.email}, async (err, user)=>{
 			// eval(require('locus'));
 			
 			if(user){
 				console.log('user exists');
-				flashMessageObj.errorCampgroundMessage(req, res, {message:'Already have an email that exists'});
+				flashMessageObj.errorCampgroundMessage(req, res, 'Already have an email that exists');
 			}else{
 				if(req.file){
 					try{
@@ -93,7 +93,7 @@ router.post('/register', upload.single('avatar'), (req, res)=>{
 						userWeb.avatar = result.secure_url;
 						userWeb.avatarId = result.public_id;
 					}catch(err){
-						return flashMessageObj.throwNewError(req, res, 'Could not upload image try again.');
+						return flashMessageObj.errorCampgroundMessage(req, res, 'Could not upload image try again.');
 					}
 				}
 				if(err){
@@ -108,14 +108,14 @@ router.post('/register', upload.single('avatar'), (req, res)=>{
 				User.register(newUser, req.body.password,(err,user)=>{
 					if(err){
 						console.log(err);
-						flashMessageObj.errorCampgroundMessage(req, res, err);
+						flashMessageObj.errorCampgroundMessage(req, res, err.message);
 					}else{
 						var token = new Token({
 							_userId: user._id,
 							token: crypto.randomBytes(16).toString('hex')
 						});
 						token.save(err =>{
-							if(err){return errorCampgroundMessage(req, res, err);}
+							if(err){return flashMessageObj.errorCampgroundMessage(req, res, err.message);}
 							sendEmail({user, value:3, token},req, res);
 						})
 					}
@@ -131,18 +131,18 @@ router.post('/register', upload.single('avatar'), (req, res)=>{
 router.get('/confirmation/:token', (req, res, err)=>{
 
     Token.findOne({ token: req.params.token }, function (err, token) {
-        if (!token) return flashMessageObj.errorCampgroundMessage(req, res, {message:'We were unable to find a valid token. Your token my have expired.' });
+        if (!token) return flashMessageObj.errorCampgroundMessage(req, res, 'We were unable to find a valid token. Your token my have expired.');
  		//eval(require('locus'));
         // If we found a token, find a matching user
         User.findOne({ _id: token._userId}, function (err, user) {
 			
-            if (!user) return flashMessageObj.errorCampgroundMessage(req, res, {message:'We were unable to find a user for this token.' });
-            if (user.isVerified) return flashMessageObj.errorCampgroundMessage(req, res, {message:'This user has already been verified.' });
+            if (!user) return flashMessageObj.errorCampgroundMessage(req, res, 'We were unable to find a user for this token.');
+            if (user.isVerified) return flashMessageObj.errorCampgroundMessage(req, res, 'This user has already been verified.');
  
             // Verify and save the user
             user.isVerified = true;
             user.save(function (err) {
-                if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err); }
+                if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err.message); }
 				req.flash('success','Account has been verified, please login');
                 res.redirect('/login');
             });
@@ -151,17 +151,17 @@ router.get('/confirmation/:token', (req, res, err)=>{
 });
 
 router.get('/resend', (req, res, err)=>{
-	if(err) return flashMessageObj.errorCampgroundMessage(req, res, err);
+	if(err) return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 	User.findOne({ email: req.body.email }, function (err, user) {
-		if (!user) return flashMessageObj.errorCampgroundMessage(req, res,{ message: 'We were unable to find a user with that email.' });
-		if (user.isVerified) return flashMessageObj.errorCampgroundMessage(req, res,{ message: 'This account has already been verified. Please log in.' });
+		if (!user) return flashMessageObj.errorCampgroundMessage(req, res, 'We were unable to find a user with that email.');
+		if (user.isVerified) return flashMessageObj.errorCampgroundMessage(req, res, 'This account has already been verified. Please log in.');
 
 		// Create a verification token, save it, and send email
 		var token = new Token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') });
 
 		// Save the token
 		token.save(function (err) {
-			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, {message: err.message }); }
+			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err.message); }
 			sendEmail({user, value:3, token},req, res);
 		});
 	});
@@ -178,16 +178,16 @@ router.get('/login',(req,res)=>{
 router.post('/login', (req,res,next) => {
 	passport.authenticate('local', function(err, user, info) {
 		if (err) { 
-			return flashMessageObj.errorCampgroundMessage(req, res, err); 
+			return flashMessageObj.errorCampgroundMessage(req, res, err.message); 
 		}
 		if (!user) { 
-			return flashMessageObj.errorCampgroundMessage(req, res, {message: 'Account does not exist or password is not correct'}); 
+			return flashMessageObj.errorCampgroundMessage(req, res,'Account does not exist or password is not correct'); 
 		}
 		if(!user.isVerified){ 
-			return flashMessageObj.errorCampgroundMessage(req, res, {message: 'Account is not verified'});
+			return flashMessageObj.errorCampgroundMessage(req, res, 'Account is not verified');
 		}
 		req.logIn(user, function(err) {
-			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err); }
+			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err.message); }
 			return res.redirect('/campgrounds');
 		});
 	  })(req, res, next);	
@@ -219,8 +219,7 @@ router.post('/forgot', (req, res, next)=>{
 	(token, done) =>{
 		User.findOne({email:req.body.email}, (err, user)=>{
 			if(!user){
-				req.flash('error', 'No account has this email');
-				return res.redirect('/forgot');
+				return flashMessageObj.errorCampgroundMessage(req, res, 'No account has this email');	
 			}
 			user.resetPasswordToken = token;
 			user.resetPasswordExpires = Date.now() + 3600000;
@@ -242,8 +241,7 @@ router.post('/forgot', (req, res, next)=>{
 router.get('/reset/:token',(req, res) =>{
 	User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, (err, user) => {
     	if (!user) {
-      		req.flash('error', 'Password reset token is invalid or has expired.');
-      		return res.redirect('/forgot');
+			return flashMessageObj.errorCampgroundMessage(req, res, 'Password reset token is invalid or has expired.', '/forgot');
     	}
     	res.render('auth/reset', {token: req.params.token});
 	});
@@ -254,8 +252,7 @@ router.post('/reset/:token', function(req, res) {
     	function(done) {
       		User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
 				if (!user) {
-					req.flash('error', 'Password reset token is invalid or has expired.');
-					return res.redirect('back');
+					return flashMessageObj.errorCampgroundMessage(req, res, 'Password reset token is invalid or has expired.');
 				}
 				if(req.body.password === req.body.confirm) {
 					user.setPassword(req.body.password, function(err) {
@@ -271,8 +268,7 @@ router.post('/reset/:token', function(req, res) {
 						});
 					})
 				} else {
-					req.flash("error", "Passwords do not match.");
-					return res.redirect('back');
+					return flashMessageObj.errorCampgroundMessage(req, res, 'Passwords do not match.');
 				}
       		});
     	},
@@ -290,7 +286,7 @@ router.post('/reset/:token', function(req, res) {
 router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
 	Campgrounds.find({'author.id':req.user.id}, (err, campgrounds)=>{
 		if(err || !campgrounds){
-			flashMessageObj.throwNewError(req, res, 'Could not connect to campground try again');
+			flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campground try again');
 		}else{
 			var haveCamps = checkCamps(campgrounds);
 			res.render('userprofile', { campgrounds: campgrounds, haveCamps:haveCamps });
@@ -304,11 +300,11 @@ router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
 router.get('/profiles/:id', (req, res) => {
 	User.findById(req.params.id, (err, user) => {
 		if (err || !user) {
-			flashMessageObj.throwNewError(req, res, 'Could not find missing profile try again later');
+			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing profile try again later');
 		} else {
 			Campgrounds.find({'author.id':req.params.id}, (err, campgrounds)=>{
 				if(err || !campgrounds){
-					flashMessageObj.throwNewError(req, res, 'Could not connect to campground try again');
+					flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campground try again');
 				}else{
 					var haveCamps = checkCamps(campgrounds);
 					res.render('profiles', { user: user, campgrounds: campgrounds, haveCamps: haveCamps });
@@ -389,7 +385,7 @@ sendEmail = (inputs, req, res) =>{
 		};
 		smtpTransport.sendMail(mailOptions, function(err) {
 			if(err){
-				return errorCampgroundMessage(req, res, err);
+				return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 			}
 			req.flash('success', 'A verification email has been sent to '+ inputs.user.email+'.');
 			res.redirect('/campgrounds');
