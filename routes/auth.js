@@ -60,13 +60,10 @@ router.get('/', (req, res) => {
 });
 
 var checkCamps = (campgrounds) =>{
-	var boolVars = {};
 	if(tools.isEmpty(campgrounds)){
-
-		return boolVars.haveCamps = false;
-	}else{
-		return boolVars.haveCamps = true;
+		return false;
 	}
+	return true;
 	//return boolVars;
 }
 
@@ -295,8 +292,8 @@ router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
 		if(err || !campgrounds){
 			flashMessageObj.throwNewError(req, res, 'Could not connect to campground try again');
 		}else{
-			var boolVars = checkCamps(campgrounds);
-			res.render('userprofile', { campgrounds: campgrounds, boolVars:boolVars });
+			var haveCamps = checkCamps(campgrounds);
+			res.render('userprofile', { campgrounds: campgrounds, haveCamps:haveCamps });
 		}
 	});
 });
@@ -313,8 +310,8 @@ router.get('/profiles/:id', (req, res) => {
 				if(err || !campgrounds){
 					flashMessageObj.throwNewError(req, res, 'Could not connect to campground try again');
 				}else{
-					var boolVars = checkCamps(campgrounds);
-					res.render('profiles', { user: user, campgrounds: campgrounds, boolVars: boolVars });
+					var haveCamps = checkCamps(campgrounds);
+					res.render('profiles', { user: user, campgrounds: campgrounds, haveCamps: haveCamps });
 				}
 			});
 		}
