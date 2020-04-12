@@ -181,7 +181,7 @@ router.post('/login', (req,res,next) => {
 			return flashMessageObj.errorCampgroundMessage(req, res, err); 
 		}
 		if (!user) { 
-			return flashMessageObj.errorCampgroundMessage(req, res, {message: 'Account does not exist'}); 
+			return flashMessageObj.errorCampgroundMessage(req, res, {message: 'Account does not exist or password is not correct'}); 
 		}
 		if(!user.isVerified){ 
 			return flashMessageObj.errorCampgroundMessage(req, res, {message: 'Account is not verified'});
