@@ -14,6 +14,28 @@ const	nodemailer 		= require('nodemailer'),
 		crypto 			= require('crypto'),
 		{ google } 		= require("googleapis"),
 		OAuth2 			= google.auth.OAuth2;
+
+var multer = require('multer');
+var storage = multer.diskStorage({
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  }
+});
+var imageFilter = function (req, file, cb) {
+    // accept image files only
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+        return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+};
+var upload = multer({ storage: storage, fileFilter: imageFilter})
+
+var cloudinary = require('cloudinary');
+cloudinary.config({ 
+  cloud_name: 'josuemartinez', 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 		
 //============================================
 //set up OAUTH client to send emails
@@ -55,20 +77,28 @@ router.get('/register',(req,res)=>{
 	res.render('auth/register', {page:'register'});
 });
 
-router.post('/register',(req, res)=>{
-	// eval(require('locus'));
-
+router.post('/register', upload.single('avatar'), (req, res)=>{
 	var userWeb = req.body.user;
 	userWeb.username = req.body.username;
 	if(req.body.password !== req.body.rePassword){
 		flashMessageObj.errorCampgroundMessage(req, res, {message: "Passwords do not match up"});
 	}else{
-		User.findOne({email:userWeb.email},(err, user)=>{
+		User.findOne({email:userWeb.email}, async (err, user)=>{
 			// eval(require('locus'));
+			
 			if(user){
 				console.log('user exists');
 				flashMessageObj.errorCampgroundMessage(req, res, {message:'Already have an email that exists'});
 			}else{
+				if(req.file){
+					try{
+						let result = await cloudinary.v2.uploader.upload(req.file.path);
+						userWeb.avatar = result.secure_url;
+						userWeb.avatarId = result.public_id;
+					}catch(err){
+						return flashMessageObj.throwNewError(req, res, 'Could not upload image try again.');
+					}
+				}
 				if(err){
 					res.redirect('back');
 				}

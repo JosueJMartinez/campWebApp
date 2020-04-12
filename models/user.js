@@ -9,10 +9,8 @@ const userSchema = new mongoose.Schema({
 		required: true
 	},
 	password: String,
-	avatar: {
-		type: String,
-		default:'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80'
-	},
+	avatar: String,
+	avatarId: String,
 	firstName: String,
 	lastName: String,
 	email: {
