@@ -72,7 +72,7 @@ router.get('/:comment_id/edit', middlewareObj.checkCommentOwnership, (req,res)=>
 });
 //=============================================
 //UPDATE Route comments
-router.put('/:comment_id', middlewareObj.checkCommentOwnership,(req,res)=>{
+router.put('/:comment_id', middlewareObj.checkCommentOwnership, (req,res)=>{
 	Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment,(err, foundComment)=>{
 		if(err || !foundComment){
 			flashMessageObj.throwNewError(req, res, 'Could not update comment');
@@ -99,7 +99,6 @@ router.delete('/:comment_id', middlewareObj.checkCommentOwnership,(req,res)=>{
 					res.redirect('/campgrounds/'+req.params.id);
 				}
 			});
-			
 		}
 	});
 });

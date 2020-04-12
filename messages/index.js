@@ -4,14 +4,14 @@ var flashMessageObj = {};
 flashMessageObj.errorCampgroundMessage=(req, res, err, navigation)=>{
     req.flash('error', err.message);
 	if(navigation){
-		res.redirect(navigation);
+		return res.redirect(navigation);
 	}else{
-		res.redirect('back');	
+		return res.redirect('back');	
 	}
-    
 };
 
-//creates a new error for user handling
+//creates a new error for user handling 
+//need to use this.... need to decided which one I want to use
 flashMessageObj.throwNewError = (req, res, message, navigation)=>{
     try{
         throw new Error('error');

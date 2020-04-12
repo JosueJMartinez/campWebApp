@@ -5,6 +5,7 @@ const Comment = require('./comment');
 const campGndSchema = new mongoose.Schema({
 	title: String,
 	img: String,
+	img_id: String,
 	location: String,
 	lat: Number,
 	lng: Number,

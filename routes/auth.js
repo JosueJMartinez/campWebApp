@@ -6,8 +6,8 @@ const   express     	= require('express'),
         flashMessageObj = require('../messages'),
 		Campgrounds		= require('../models/campground.js'),
 		TOOLS			= require('../tools'),
-		Token			= require('../models/token.js'),
 		tools			= new TOOLS(),
+		Token			= require('../models/token.js'),
 		async 			= require('async');
 
 const	nodemailer 		= require('nodemailer'),

@@ -17,8 +17,7 @@
 				<img id='image' class='img-responsive' src='<%=campground.img%>'>
 				<div class='caption-full caption'>
 					<h4 class='pull-right'>
-						$
-						<%= campground.price %> per night
+						$<%= campground.price %> per night
 					</h4>
 					<h4>
 							<%=campground.title%>
@@ -34,10 +33,9 @@
 								<a class='new-link' href='/profiles/<%=campground.author.id%>'>
 						<% } %>
 							<em>Created by:
-								<%=campground.author.username %>
-						</a>,
+								<%=campground.author.username %></em></a>,
 						<%= moment(campground.createdAt).fromNow()%>
-							</em>
+							
 					</p>
 
 					<div>
