@@ -6,7 +6,9 @@ const express 		= 	require('express'),
 	TOOLS			= 	require('../tools'),
 	tools			= 	new TOOLS(),
 	NodeGeocoder 	= 	require('node-geocoder');
-
+//=============================================
+// Setup for uploading images to webApp
+//=============================================
 var multer = require('multer');
 var storage = multer.diskStorage({
   filename: function(req, file, callback) {
@@ -20,7 +22,15 @@ var imageFilter = function (req, file, cb) {
     }
     cb(null, true);
 };
-var upload = multer({ storage: storage, fileFilter: imageFilter})
+var upload = multer({ storage: storage, fileFilter: imageFilter}).single('image');
+function uploadFile(req, res, next){
+	upload(req, res, err =>{
+		if(err){
+			return flashMessageObj.errorCampgroundMessage(req, res, err.message);
+		}
+		next();
+	});
+}
 
 var cloudinary = require('cloudinary');
 cloudinary.config({ 
@@ -76,7 +86,7 @@ router.get('/', (req, res) => {
 //=================================================================
 //CREATE route - add new campgrounds to db
 //post to add new campgrounds
-router.post('/', middlewareObj.isLoggedIn, upload.single('image'), (req, res) => {
+router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 	//get data from form and add to camgrounds database
 	//redirect back to campgrounds
 
@@ -161,7 +171,7 @@ router.get('/:id/edit', middlewareObj.checkOwnership, (req, res) => {
 
 //======================================================
 //UPDATE Route something is wrong here where I am not passing variables.
-router.put('/:id', middlewareObj.checkOwnership, upload.single('image'), (req, res) => {
+router.put('/:id', middlewareObj.checkOwnership, uploadFile, (req, res) => {
 	if (req.body.campground.price <= 0) {
 		return flashMessageObj.errorCampgroundMessage(req, res, 'Price is not above $0.00', '/campgrounds/' + req.params.id + '/edit');
 	}

@@ -14,7 +14,9 @@ const	nodemailer 		= require('nodemailer'),
 		crypto 			= require('crypto'),
 		{ google } 		= require("googleapis"),
 		OAuth2 			= google.auth.OAuth2;
-
+//=============================================
+// Setup for uploading images to webApp
+//=============================================
 var multer = require('multer');
 var storage = multer.diskStorage({
   filename: function(req, file, callback) {
@@ -28,7 +30,17 @@ var imageFilter = function (req, file, cb) {
     }
     cb(null, true);
 };
-var upload = multer({ storage: storage, fileFilter: imageFilter})
+
+var upload = multer({ storage: storage, fileFilter: imageFilter}).single('avatar');
+
+function uploadFile(req, res, next){
+	upload(req, res, err =>{
+		if(err){
+			return flashMessageObj.errorCampgroundMessage(req, res, err.message);
+		}
+		next();
+	});
+}
 
 var cloudinary = require('cloudinary');
 cloudinary.config({ 
@@ -67,6 +79,84 @@ var checkCamps = (campgrounds) =>{
 	//return boolVars;
 }
 
+//=============================================================
+//Function for emails to send various emails considering situation
+//inputs is an object with user email, token, and value which decides the setup
+//=============================================================
+sendEmail = (inputs, req, res) =>{
+	const accessToken = oauth2Client.getAccessToken();
+	console.log(accessToken);
+
+	//set up mail transport to send emails
+	const smtpTransport = nodemailer.createTransport({
+		service: 'Gmail',
+		auth:{
+			  type: "OAuth2",
+			  user: "josuedevtesting@gmail.com", 
+			  clientId: process.env.EMAILCLIENTID,
+			  clientSecret: process.env.EMAILCLIENTSECRET,
+			  refreshToken: process.env.REFRESHTOKEN,
+			  accessToken: accessToken
+		}
+	});
+
+
+	smtpTransport.verify(function(error, success) {
+		if (error) {
+			console.log(error);
+			console.log('test2');
+		} else {
+			console.log('Server is ready to take our messages');
+		}
+	});
+
+
+	if(inputs.value === 1){
+		var mailOptions = {
+			from:process.env.EMAIL,
+			to: inputs.user.email, // list of receivers
+			subject: 'Reset Password for YelpCamp', // Subject line
+			text: 'You are reseting your password'+'\n\n'+
+			'http://'+ req.headers.host + '/reset/'+ inputs.token + '\n\n' +
+			'testing this feature at the moment', // plain text body
+		};
+		smtpTransport.sendMail(mailOptions, err =>{
+			console.log('email sent');
+			req.flash('success', 'An email has been sent to '+ inputs.user.email + ' with further instructions.');
+			inputs.done(err, 'done');
+		});
+	}else if(inputs.value === 2){
+		var mailOptions = {
+			to: inputs.user.email,
+			from: process.env.EMAIL,
+			subject: 'Your password has been changed',
+			text: 'Hello,\n\n' +
+			  'This is a confirmation that the password for your account ' + inputs.user.email + ' has just been changed.\n'
+		};
+		smtpTransport.sendMail(mailOptions, function(err) {
+			req.flash('success', 'Success! Your password has been changed.');
+			inputs.done(err);
+		});
+	}else if(inputs.value === 3){
+		var mailOptions = {
+			to: inputs.user.email,
+			from: process.env.EMAIL,
+			subject: 'Account Verification for YelpCamp',
+			text: 'Hello,\n\n' +
+			  'Please verify your account by clicking on this link: \n http:\/\/' + req.headers.host + '\/confirmation\/' + inputs.token.token + '.\n'
+		};
+		smtpTransport.sendMail(mailOptions, function(err) {
+			if(err){
+				return flashMessageObj.errorCampgroundMessage(req, res, err.message);
+			}
+			req.flash('success', 'A verification email has been sent to '+ inputs.user.email+'.');
+			res.redirect('/campgrounds');
+		});
+	}
+
+}
+//=================================================================
+
 //===============================================================
 //register routes
 //==============================================================
@@ -74,7 +164,7 @@ router.get('/register',(req,res)=>{
 	res.render('auth/register', {page:'register'});
 });
 
-router.post('/register', upload.single('avatar'), (req, res)=>{
+router.post('/register', uploadFile, (req, res)=>{
 	var userWeb = req.body.user;
 	userWeb.username = req.body.username;
 	if(req.body.password !== req.body.rePassword){
@@ -89,6 +179,7 @@ router.post('/register', upload.single('avatar'), (req, res)=>{
 			}else{
 				if(req.file){
 					try{
+						
 						let result = await cloudinary.v2.uploader.upload(req.file.path);
 						userWeb.avatar = result.secure_url;
 						userWeb.avatarId = result.public_id;
@@ -97,7 +188,7 @@ router.post('/register', upload.single('avatar'), (req, res)=>{
 					}
 				}
 				if(err){
-					res.redirect('back');
+					return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 				}
 				var newUser = new User(userWeb);
 
@@ -321,77 +412,5 @@ router.get('/secret', middlewareObj.isLoggedIn, (req, res)=>{
 	res.render('secret');	
 });
 
-sendEmail = (inputs, req, res) =>{
-	const accessToken = oauth2Client.getAccessToken();
-	console.log(accessToken);
-
-	//set up mail transport to send emails
-	const smtpTransport = nodemailer.createTransport({
-		service: 'Gmail',
-		auth:{
-			  type: "OAuth2",
-			  user: "josuedevtesting@gmail.com", 
-			  clientId: process.env.EMAILCLIENTID,
-			  clientSecret: process.env.EMAILCLIENTSECRET,
-			  refreshToken: process.env.REFRESHTOKEN,
-			  accessToken: accessToken
-		}
-	});
-
-
-	smtpTransport.verify(function(error, success) {
-		if (error) {
-			console.log(error);
-			console.log('test2');
-		} else {
-			console.log('Server is ready to take our messages');
-		}
-	});
-
-
-	if(inputs.value === 1){
-		var mailOptions = {
-			from:process.env.EMAIL,
-			to: inputs.user.email, // list of receivers
-			subject: 'Reset Password for YelpCamp', // Subject line
-			text: 'You are reseting your password'+'\n\n'+
-			'http://'+ req.headers.host + '/reset/'+ inputs.token + '\n\n' +
-			'testing this feature at the moment', // plain text body
-		};
-		smtpTransport.sendMail(mailOptions, err =>{
-			console.log('email sent');
-			req.flash('success', 'An email has been sent to '+ inputs.user.email + ' with further instructions.');
-			inputs.done(err, 'done');
-		});
-	}else if(inputs.value === 2){
-		var mailOptions = {
-			to: inputs.user.email,
-			from: process.env.EMAIL,
-			subject: 'Your password has been changed',
-			text: 'Hello,\n\n' +
-			  'This is a confirmation that the password for your account ' + inputs.user.email + ' has just been changed.\n'
-		};
-		smtpTransport.sendMail(mailOptions, function(err) {
-			req.flash('success', 'Success! Your password has been changed.');
-			inputs.done(err);
-		});
-	}else if(inputs.value === 3){
-		var mailOptions = {
-			to: inputs.user.email,
-			from: process.env.EMAIL,
-			subject: 'Account Verification for YelpCamp',
-			text: 'Hello,\n\n' +
-			  'Please verify your account by clicking on this link: \n http:\/\/' + req.headers.host + '\/confirmation\/' + inputs.token.token + '.\n'
-		};
-		smtpTransport.sendMail(mailOptions, function(err) {
-			if(err){
-				return flashMessageObj.errorCampgroundMessage(req, res, err.message);
-			}
-			req.flash('success', 'A verification email has been sent to '+ inputs.user.email+'.');
-			res.redirect('/campgrounds');
-		});
-	}
-
-}
 
 module.exports = router;
