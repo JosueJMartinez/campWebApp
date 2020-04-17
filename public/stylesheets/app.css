@@ -37,6 +37,10 @@ body {
 	color: #a3c6c4;
 }
 
+.alt-bg{
+	background: #c0c0c0;
+}
+
 div a + form {
 	display: inline;
 }
@@ -45,6 +49,8 @@ div a + form {
 	height: 400px;
 	width: 100%;
 }
+
+
 
 @media (min-width: 992px) {
 	.card-columns {

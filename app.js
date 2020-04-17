@@ -1,11 +1,11 @@
 /*
 	Things to do:
 	*	Need to fix bug where token does not expire to verify new user
+	*	Fix passport error messages
 	*	Update server side to check for valid inputs if client side javascript is turned off
 	*	Need to work in AJAX to make site more responsive
 	*	Keep updating profile page for edits on information
 	*	More features need to be added. Possible like buttons
-	*	Add REACT.js probably tied with 8 and 9
 */
 
 require('dotenv').config();

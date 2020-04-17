@@ -48,9 +48,9 @@
 					</div>
 						<hr class='my-3'>
 					<ul class="list-unstyled">
-						<%campground.comments.forEach(comment=>{%>
-						  <li class="media">
-							  
+						<% let t = 1; campground.comments.forEach(comment=>{%>
+						  <li class="media border <%= (t%2!==0)?'alt-bg':''%>">
+							  <%t++;%>
 							  <div class='col-3'>
 								<img src="<%= (comment.author.avatar) ? comment.author.avatar : 'https://res.cloudinary.com/josuemartinez/image/upload/v1586652261/102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d.jpg'%>" class= " mr-3 img-fluid img-thumbnail" alt="<%=comment.author.username %>'s avatar ">  
 							  </div>
@@ -86,7 +86,6 @@
 							</div>
 							  
 						  </li>
-						<hr class='my-1'>
 					  	<% }); %>
 					</ul>
 					<a href='/campgrounds'>Go back</a>
