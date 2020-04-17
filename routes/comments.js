@@ -18,7 +18,7 @@ router.get('/new', middlewareObj.isLoggedIn, (req, res) => {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find campground');
 		}
 		else {
-			res.render('comments/new', { campground: campground});
+			res.render('comments/new', { campground: campground, form:true});
 		}
 	});
 
@@ -42,7 +42,7 @@ router.post('/', middlewareObj.isLoggedIn, (req, res) => {
 					//add username and id to comment
 					newComment.author.id = req.user._id;
 					newComment.author.username = req.user.username;
-					
+					newComment.author.avatar = req.user.avatar;
 					newComment.campground = req.params.id; // store id for campground related to this comment
 					
 					newComment.save();
@@ -66,7 +66,7 @@ router.get('/:comment_id/edit', middlewareObj.checkCommentOwnership, (req,res)=>
 		if(err || !foundComment){
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find comment');
 		}else{
-			res.render('comments/edit', {campground_id:req.params.id, comment:foundComment});
+			res.render('comments/edit', {campground_id:req.params.id, comment:foundComment, form:true});
 		}
 	});
 });

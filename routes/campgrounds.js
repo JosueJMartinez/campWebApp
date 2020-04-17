@@ -53,7 +53,6 @@ var geocoder = NodeGeocoder(options);
 //INDEX route - show all campgrounds
 //campgrounds page
 router.get('/', (req, res) => {
-	//eval(require('locus'));
 	if(req.query.search){
 		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
 		Campground.find({title: regex}, (err, campgrounds) => {
@@ -64,7 +63,7 @@ router.get('/', (req, res) => {
 				if(campgrounds.length < 1){
 					flashMessageObj.errorCampgroundMessage(req, res, 'Could not find any campgrounds please search again','/campgrounds');
 				}else{
-					res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user});	
+					res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds'});	
 				}
 				
 			}
@@ -76,7 +75,7 @@ router.get('/', (req, res) => {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campgrounds try again later');
 			}
 			else {
-				res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user});
+				res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds'});
 			}
 		});
 	}
@@ -142,7 +141,7 @@ router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 //NEW Route - show form to create new campgrounds
 //form used to add new campgrounds
 router.get('/new', middlewareObj.isLoggedIn, (req, res) => {
-	res.render('campgrounds/new');
+	res.render('campgrounds/new', {form:true});
 });
 
 //==============================================================
@@ -156,7 +155,7 @@ router.get('/:id', (req, res) => {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing campground try again later if problem persists');
 		}
 		else {
-			res.render('campgrounds/show', { campground: foundCampground });
+			res.render('campgrounds/show', { campground: foundCampground, page:'show' });
 		}
 	});
 });
@@ -165,7 +164,7 @@ router.get('/:id', (req, res) => {
 //EDIT route 
 router.get('/:id/edit', middlewareObj.checkOwnership, (req, res) => {
 	Campground.findById(req.params.id, (err, foundCampground) => {
-		res.render('campgrounds/edit', { campground: foundCampground });
+		res.render('campgrounds/edit', { campground: foundCampground, form:true });
 	});
 });
 

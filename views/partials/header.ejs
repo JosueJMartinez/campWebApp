@@ -3,82 +3,75 @@
 
 <head>
 	<!-- Make site responsive on mobile/tablet -->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>YelpCamp Demo</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 	<link rel="stylesheet" href="/stylesheets/app.css" crossorigin="anonymous">
 
 </head>
 
-<body>
+<body class="bg-secondary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+	<div class='container'>
+		<a class="navbar-brand" href="/">YelpCamp</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
 
-	<nav class="navbar navbar-inverse">
-		<div class="container">
-			<!-- Brand and toggle get grouped for better mobile display -->
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false" aria-controls='navbar'>
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="/">YelpCamp</a>
-			</div>
-
-			<!-- Collect the nav links, forms, and other content for toggling -->
-			<div class="collapse navbar-collapse" id="navbar-collapse-1">
-				<ul class="nav navbar-nav">
-            		<li class="<%= typeof page !== 'undefined' && page === 'campgrounds' ? 'active' : '' %>"><a href="/campgrounds">Home</a></li>
-					<li>
-						<p>
-							<form action='/campgrounds' method='GET' class='form-inline'>
-								<div class='form-group'>
-									<input class='form-control' type='text' name='search' placeholder='Search for Campground...'>
-									<button class='btn btn-primary'>
-										Search
-									</button>
-
-								</div>
-							</form>
-						</p>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item <%= typeof page !== 'undefined' && page === 'campgrounds' ? 'active' : '' %>">
+					<a class="nav-link" href="/campgrounds">Home
+						<span class="sr-only">(current)</span>
+					</a>
+				</li>
+			</ul>
+			<ul class="navbar-nav ">
+				<%if(!currentUser){%>
+					<li class="nav-item <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">
+						<a class="nav-link" href="/login">Login</a>
 					</li>
-					
-        		</ul>
-				<ul class="nav navbar-nav navbar-right">
-					<%if(!currentUser){%>
-						<li class="<%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>"><a href="/login">Login</a></li>
-                		<li class="<%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>"><a href="/register">Sign Up</a></li>
-					<% }else{%>
-						<li><a href='/userprofile'>
+					<li class="nav-item <%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>">
+						<a class="nav-link" href="/register">Sign Up</a>
+					</li>
+				<% }else{%>
+					<li class="nav-item <%= typeof page !== 'undefined' && page === 'profile' ? 'active' : '' %>">
+						<a class="nav-link" href='/userprofile'>
 							<% if(currentUser.isAdmin){%>
-							Administrator: 
+								Administrator:
 							<% } else{ %>
-							Signed in as 
+								Signed in as
 							<% } %>
-							<%= currentUser.username%>
-							</li>
-							</a>	
-						<li>
-							<a href="/logout">Log Out</a>
-						</li>
-					<% }%>
+								<%= currentUser.username%>
+						</a>
+					</li>
 
-				</ul>
+					<li class='nav-item'>
+						<a class="nav-link" href="/logout">Log Out</a>
+					</li>
+				<% }%>
+
+			</ul>
+			<form class="form-inline my-2 my-lg-0" action='/campgrounds' method='GET'>
+				<input class="form-control mr-sm-2" type="search" name='search' placeholder="Search Campgrounds..." aria-label="Search">
+				<button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Search</button>
+			</form>
+		</div>
+	</div>
+
+</nav>
+<main role="main" class="flex-shrink-0 <%= typeof page !== 'undefined' && ((page === 'campgrounds')||(page === 'profiles')||(page === 'profile')||(page === 'show')) ? '' : 'pt-5 pb-5' %>">
+
+
+	<div class="container pb-5 pt-3 <%= (typeof page !== 'undefined' && page==='show') ? 'bg-secondary': 'bg-white rounded-lg border border-dark'%> <%= typeof form !== 'undefined' && form ? 'col-md-7 col-lg-5' : '' %>">
+		<% if(error&&error.length>0){%>
+			<div class="alert alert-danger" role="alert">
+				<%=error%>
 			</div>
-			<!-- /.navbar-collapse -->
-		</div>
-		<!-- /.container-fluid -->
-	</nav>
-<div class='container'>
-	<% if(error&&error.length>0){%>
-		<div class="alert alert-danger" role="alert">
-			<%=error%>
-		</div>
-	<% }%>
-	<%if(success&&success.length>0){%>
-		<div class="alert alert-success" role="alert">
-			<%=success%>
-		</div>
-	<% }%>
-</div>
-<div class='container'>
+		
+		<% }%>
+		<%if(success&&success.length>0){%>
+			<div class="alert alert-success" role="alert">
+				<%=success%>
+			</div>
+		<% }%>

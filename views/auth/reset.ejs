@@ -1,31 +1,31 @@
 <%include ../partials/header%>
+	<div class='row justify-content-center'>
+		<div class='col-12 mt-4 text-center'>
+			<h2>
+				Please reset password
+			</h2>
+		</div>
+		<div class='col-7'>
+			<form action='/reset/<%= token %>' method='POST'>
+				<div class='form-group'>
+					<label for='password'>New Password</label>
+					<input id= 'username' class='form-control' type='password' name='password' placeholder='New Password'>
+				</div>
+				<div class='form-group'>
+					<label for='confirm'>Confirm Password</label>
+					<input id='password' class='form-control' type='password' name='confirm' placeholder='Password'>
+				</div>
+				<div class='form-group'>
+					<button class='btn btn-lg btn-primary btn-block'>
+						Reset Password
+					</button>
+				</div>
 
-
-		<div class='row'>
-			<h1 style='text-align:center'>
-			Please reset password
-			</h1>
-			<div style='width:30%; margin:30px auto;'>
-				<form action='/reset/<%= token %>' method='POST'>
-					<div class='form-group'>
-						<label for='password'>New Password</label>
-						<input id= 'username' class='form-control' type='password' name='password' placeholder='New Password'>
-					</div>
-					<div class='form-group'>
-						<label for='confirm'>Confirm Password</label>
-						<input id='password' class='form-control' type='password' name='confirm' placeholder='Password'>
-					</div>
-					<div class='form-group'>
-						<button class='btn btn-lg btn-primary btn-block'>
-							Reset Password
-						</button>
-					</div>
-
-				</form>
-				<a href='/campgrounds'>Go back</a>
-			</div>
-			
-
+			</form>
+			<a href='/campgrounds'>Go back</a>
 		</div>
 
-	<%include ../partials/footer%>
+
+	</div>
+
+<%include ../partials/footer%>

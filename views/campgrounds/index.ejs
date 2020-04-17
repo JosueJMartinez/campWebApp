@@ -1,50 +1,56 @@
 <%include ../partials/header %>
 
+<header class='jumbotron'>
+	<h1 class='display-4'>
+		Welcome to YelpCamp!
+	</h1>
+	<p class='lead'>
+		View our camps
+	</p>
+	<hr class="my-4">
+	<p>
+		Enjoy browsing our selections...		
+	</p>
+	<p>
+		<a class='btn btn-lg btn-primary' href='campgrounds/new'>Add new campground</a>
+	</p>
+</header>
 
-
-		<header class='jumbotron'>
-			<h1>
-				Welcome to YelpCamp!
-			</h1>
-			<p>
-				View our camps
-			</p>
-			<p>
-				<a class='btn btn-lg btn-primary' href='campgrounds/new'>Add new campground</a>
-			</p>
-		</header>
-
-		<div class='row'>
-			<div class='col-lg-12'>
-				<h3>
-					Our Most Popular Camps
-				</h3>
-			</div>
+	<div class='row'>
+		<div class='col-lg-12'>
+			<h3>
+				Our Most Popular Camps
+			</h3>
 		</div>
-		<div class='row text-center' style='display:flex; flex-wrap: wrap;'>
+	</div>
+	<div class='card-columns'>
 		<% campgrounds.forEach(camp=>{ %>
-			<div class='col-md-3 col-sm-6'>
-				<div class='thumbnail'>
-					<img src='<%=camp.img%>'>
-					<div class='caption'>
-						<h4>
+			<div class='col mb-4'>
+				<div class='card bg-light'>
+					<img class="card-img-top img-thumbnail" src='<%=camp.img%>' alt='<%=camp.title%>'>
+					<div class="card-body text-center">
+						<h5 class="card-title">
 							<%=camp.title%>
-						</h4>
-						<h5>
-							<% if(currentUser && (currentUser._id.equals(camp.author.id))){ %>
+						</h5>
+						<p class="card-text">
+						<% if(currentUser && (currentUser._id.equals(camp.author.id))){ %>
 							<a class='new-link' href='/userprofile'>
-							<% } else { %>
+						<% } else { %>
 							<a class='new-link' href='/profiles/<%=camp.author.id%>'>
-							<% } %>	
-							<em>Created by: <%= camp.author.username%></em></a></h5>
-						<p>
-							<a href='/campgrounds/<%=camp._id%>' class='btn btn-primary'>More Info</a>
+						<% } %>
+								<em>Created by:
+									<%= camp.author.username%>
+								</em>
+							</a>
+						</p>
+						<p class="card-text">
+							<a href='/campgrounds/<%=camp._id%>' class='btn btn-sm btn-outline-primary'>More Info</a>
 						</p>
 					</div>
 				</div>
-			
+
 			</div>
 			<%})%>
-		</div>
+	</div>
 
-	<%include ../partials/footer%>
+<%include ../partials/footer%>

@@ -1,11 +1,11 @@
 <%include ../partials/header%>
-
-
-	<div class='row'>
-		<h1 style='text-align:center'>
-		Please register a new user
-		</h1>
-		<div style='width:30%; margin:30px auto;'>
+	<div class='row justify-content-center'>
+		<div class='col-12 mt-4 text-center'>
+			<h2>
+				Please register a new user
+			</h2>
+		</div>
+		<div class='col-7'>
 			<form action='/register' method='POST' enctype='multipart/form-data'>
 				<div class='form-group'>
 					<label for='username'>Username</label>
@@ -32,7 +32,7 @@
 				</div>
 				<div class='form-group'>
 					<label for='avatar'>Avatar</label>
-					<input id='avatar' class='form-control' type='file' name='avatar' accept='image/*' required>
+					<input id='avatar' class='form-control' type='file' name='avatar' accept='image/*'>
 				</div>
 				<div class='form-group'>
 					<label for='admin'>Please enter admin code</label>

@@ -1,29 +1,28 @@
 <%include ../partials/header%>
+	<div class='row justify-content-center'>
+		<div class='col-12 mt-4 text-center'>
+			<h2>
+				Edit Comment
+			</h2>
+		</div>
+		<div class='col-7'>
+	
+			<form action='/campgrounds/<%=campground_id%>/comments/<%=comment._id%>?_method=PUT' method='POST'>
+				<div class='form-group'>
+					<label for="comment">Edit Comment</label>
+					<textarea id="comment" rows='5' class='form-control' name='comment[text]'><%=comment.text%></textarea>
+				</div>
 
-	<div class='container'>
-		<div class='row'>
-			<h1 style='text-align:center'>
-			Edit Comment
-			</h1>
-			<div style='width:30%; margin:30px auto;'>
-				<form action='/campgrounds/<%=campground_id%>/comments/<%=comment._id%>?_method=PUT' method='POST'>
-					<div class='form-group'>
-						<label for="comment">Edit Comment</label>
-						<input id='comment' class='form-control' type='text' name='comment[text]' value='<%=comment.text%>'>
+				<div class='form-group'>
+					<button class='btn btn-lg btn-primary btn-block'>
+						Submit!
+					</button>
+				</div>
 
-					</div>
-					
-					<div class='form-group'>
-						<button class='btn btn-lg btn-primary btn-block'>
-							Submit!
-						</button>
-					</div>
-
-				</form>
-				<a href='/campgrounds'>Go back</a>
-			</div>
+			</form>
+			<a href='/campgrounds'>Go back</a>
 			
 
 		</div>
 	</div>
-	<%include ../partials/footer%>
+<%include ../partials/footer%>

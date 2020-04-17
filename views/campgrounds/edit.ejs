@@ -1,11 +1,11 @@
 <%include ../partials/header %>
-
-
-	<div class='row'>
-		<h1 style='text-align:center'>
-			Edit <%=campground.title%>
-		</h1>
-		<div style='width:30%; margin:30px auto;'>
+	<div class='row justify-content-center'>
+		<div class='col-12 mt-4 text-center'>
+			<h2>
+				Edit <%=campground.title%>
+			</h2>
+		</div>
+		<div class='col-7'>
 			<form action='/campgrounds/<%=campground._id%>?_method=PUT' method='POST' enctype='multipart/form-data'>
 				<div class='form-group'>
 					<label for="title">Title</label>
@@ -19,13 +19,13 @@
 					<label for="image">Image</label>
 					<input id="image" class='form-control' type='file' name='image' accept='image/*'>
 				</div>
-				<div class='form-group'>
-					<label for="description">Description</label>
-					<input required id='description' class='form-control' type='text' name='campground[description]' value='<%=campground.description%>'>
-				</div>
 				<div class="form-group">
 					<label for="location">Location</label>
 					<input class="form-control" type="text" name="campground[location]" id="location" value="<%= campground.location %>">
+				</div>
+				<div class='form-group'>
+					<label for="description">Description</label>
+					<textarea id="description" rows='5' class='form-control' name='campground[description]'><%=campground.description%></textarea>
 				</div>
 				<div class='form-group'>
 					<button class='btn btn-lg btn-primary btn-block'>

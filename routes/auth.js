@@ -161,7 +161,7 @@ sendEmail = (inputs, req, res) =>{
 //register routes
 //==============================================================
 router.get('/register',(req,res)=>{
-	res.render('auth/register', {page:'register'});
+	res.render('auth/register', {page:'register', form:true});
 });
 
 router.post('/register', uploadFile, (req, res)=>{
@@ -186,14 +186,18 @@ router.post('/register', uploadFile, (req, res)=>{
 					}catch(err){
 						return flashMessageObj.errorCampgroundMessage(req, res, 'Could not upload image try again.');
 					}
+				}else{
+					userWeb.avatar = 'https://res.cloudinary.com/josuemartinez/image/upload/v1586652261/102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d.jpg';
+					userWeb.avatarId = '102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d';	
 				}
+				
 				if(err){
 					return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 				}
 				var newUser = new User(userWeb);
 
 				//eval(require('locus'));
-				if(req.body.adminCode==='RubADubDub'){
+				if(req.body.adminCode===process.env.ADMIN_PW){
 					newUser.isAdmin = true;
 				}
 				User.register(newUser, req.body.password,(err,user)=>{
@@ -262,7 +266,7 @@ router.get('/resend', (req, res, err)=>{
 //login routes
 //======================================================
 router.get('/login',(req,res)=>{
-	res.render('auth/login', {page:'login'});
+	res.render('auth/login', {page:'login', form:true});
 });
 
 
@@ -279,6 +283,7 @@ router.post('/login', (req,res,next) => {
 		}
 		req.logIn(user, function(err) {
 			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err.message); }
+			req.flash('success','Welcome back ' + user.username + '!');
 			return res.redirect('/campgrounds');
 		});
 	  })(req, res, next);	
@@ -297,7 +302,7 @@ router.get('/logout',(req,res)=>{
 //forgot password routes
 //=================================================
 router.get('/forgot', (req, res)=>{
-	res.render('auth/forgot');
+	res.render('auth/forgot', {form:true});
 });
 
 router.post('/forgot', (req, res, next)=>{
@@ -325,7 +330,7 @@ router.post('/forgot', (req, res, next)=>{
 	}],
 	err => {
 		if(err) return next(err);
-		res.redirect('/forgot');
+		res.redirect('/campgrounds');
 	});
 });
 
@@ -380,7 +385,7 @@ router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campground try again');
 		}else{
 			var haveCamps = checkCamps(campgrounds);
-			res.render('userprofile', { campgrounds: campgrounds, haveCamps:haveCamps });
+			res.render('userprofile', { campgrounds: campgrounds, haveCamps:haveCamps, page:'profile'});
 		}
 	});
 });
@@ -398,7 +403,7 @@ router.get('/profiles/:id', (req, res) => {
 					flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campground try again');
 				}else{
 					var haveCamps = checkCamps(campgrounds);
-					res.render('profiles', { user: user, campgrounds: campgrounds, haveCamps: haveCamps });
+					res.render('profiles', { user: user, campgrounds: campgrounds, haveCamps: haveCamps, page:'profiles' });
 				}
 			});
 		}
