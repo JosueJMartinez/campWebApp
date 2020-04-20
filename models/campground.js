@@ -19,11 +19,8 @@ const campGndSchema = new mongoose.Schema({
 		ref:'Comment'
 	}],
 	author:{
-		id:{
-			type:mongoose.Schema.Types.ObjectId,
-			ref:'User'
-		},
-		username: String
+		type:mongoose.Schema.Types.ObjectId,
+		ref:'User'
 	},
 	price:String
 });

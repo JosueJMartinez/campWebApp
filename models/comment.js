@@ -8,17 +8,14 @@ const commentSchema = new mongoose.Schema({
 		default: Date.now 
 	},
 	author:{
-		id: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref:'User'
-		},
-		username: String,
-		avatar: String,
+		type: mongoose.Schema.Types.ObjectId,
+		ref:'User'
 	},
 	campground:{
-		type:mongoose.Schema.Types.ObjectId,
-		ref:'Campground'
+			type:mongoose.Schema.Types.ObjectId,
+			ref:'Campground'
 	}
+	
 });
 commentSchema.pre('remove', async function(){
 	try{

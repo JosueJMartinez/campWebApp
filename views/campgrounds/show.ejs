@@ -12,10 +12,10 @@
 							<%=campground.title%>
 					</h5>	
 					<h4 class='card-subtitle'>
-						<% if(currentUser && (currentUser._id.equals(campground.author.id))){ %>
+						<% if(currentUser && (currentUser._id.equals(campground.author._id))){ %>
 								<a class='new-link' href='/userprofile'>
 						<% } else { %>
-								<a class='new-link' href='/profiles/<%=campground.author.id%>'>
+								<a class='new-link' href='/profiles/<%=campground.author._id%>'>
 						<% } %>
 							<em>Created by:
 								<%=campground.author.username %></em></a>
@@ -34,7 +34,7 @@
 
 					<div>
 
-						<% if(currentUser && (currentUser.isAdmin||campground.author.id.equals(currentUser._id))){ %>
+						<% if(currentUser && (currentUser.isAdmin||campground.author._id.equals(currentUser._id))){ %>
 							<a class='btn btn-sm btn-warning' href='/campgrounds/<%= campground._id%>/edit'>Edit</a>
 							<form action='/campgrounds/<%=campground._id%>?_method=DELETE' method='POST'>
 								<button class='btn btn-sm btn-danger'>Delete</button>
@@ -51,16 +51,16 @@
 						<% let t = 1; campground.comments.forEach(comment=>{%>
 						  <li class="media border <%= (t%2!==0)?'alt-bg':''%>">
 							  <%t++;%>
-							  <div class='col-3'>
+							<div class='col-3'>
 								<img src="<%= (comment.author.avatar) ? comment.author.avatar : 'https://res.cloudinary.com/josuemartinez/image/upload/v1586652261/102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d.jpg'%>" class= " mr-3 img-fluid img-thumbnail" alt="<%=comment.author.username %>'s avatar ">  
-							  </div>
+							</div>
 							<div class="media-body col-9">
 							  <p class="mt-0 mb-1">
 								  <span class='h5'>
-									  <% if(currentUser && (currentUser._id.equals(comment.author.id))){ %>
+									  <% if(currentUser && (currentUser._id.equals(comment.author._id))){ %>
 											<a class='new-link' href='/userprofile'>
 										<% } else { %>
-											<a class='new-link' href='/profiles/<%=comment.author.id%>'>
+											<a class='new-link' href='/profiles/<%=comment.author._id%>'>
 										<% } %>
 											<%=comment.author.username%>
 											</a>
@@ -74,7 +74,7 @@
 								</p>	  
 
 								<div>
-								<% if(currentUser && (currentUser.isAdmin||comment.author.id.equals(currentUser._id))){ %>
+								<% if(currentUser && (currentUser.isAdmin||comment.author._id.equals(currentUser._id))){ %>
 									<a class='btn btn-sm btn-warning' href='/campgrounds/<%= campground._id%>/comments/<%=comment._id%>/edit'>
 										Edit
 									</a>

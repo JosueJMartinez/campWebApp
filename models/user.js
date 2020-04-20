@@ -1,5 +1,5 @@
-const	mongoose = require('mongoose'),
-		passportLocalMongoose = require('passport-local-mongoose');
+const	mongoose 				= require('mongoose'),
+		passportLocalMongoose 	= require('passport-local-mongoose');
 
 //Schema setup
 const userSchema = new mongoose.Schema({
@@ -9,8 +9,14 @@ const userSchema = new mongoose.Schema({
 		required: true
 	},
 	password: String,
-	avatar: String,
-	avatarId: String,
+	avatar: {
+		type: String,
+		default:'https://res.cloudinary.com/josuemartinez/image/upload/v1586652261/default-file-avatar-img.jpg'
+	},
+	avatarId: {
+		type: String,
+		default: 'default-file-avatar-img'
+	},
 	firstName: String,
 	lastName: String,
 	email: {

@@ -58,6 +58,41 @@
 							No Campgrounds found!
 
 						</div>
-						<% } %>
+			<% } %>
 	</div>
+	<hr class='my-3'>
+	<h3>
+		Comment History:
+	</h3>
+	<%if(haveComments){%>
+		
+		<ul class='list-unstyled'>
+			<% let t = 1; comments.forEach(comment=>{ %>
+			<li class="media border <%= (t%2!==0)?'alt-bg':''%>">
+				<% t++; %>
+				<div class="col-3">
+					<img src="<%= comment.campground.img %>" class= "mr-3 img-fluid img-thumbnail" alt="<%=comment.campground.title %>'s image ">  
+				</div>
+				<div class="media-body col-9">
+					<p class="mt-0 mb-1">
+						<span class="h5">
+							Campground:
+							<a href=<%='/campgrounds/'+comment.campground._id%>><%= comment.campground.title %></a>
+						</span>
+						<span class='float-right'>
+							<%= moment(comment.campground.createdAt).fromNow()%>
+						</span>
+					</p>
+					<p>
+						<%=comment.text;%>
+					</p>
+				</div>
+			</li>
+			<% }); %>
+		</ul>
+	<% } else{ %>
+		<div class='col mb-4'>
+				No Comments found!
+			</div>
+		<% } %>
 <%include ../partials/footer%>

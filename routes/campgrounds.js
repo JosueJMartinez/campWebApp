@@ -1,6 +1,7 @@
 const express 		= 	require('express'),
 	router 			= 	express.Router(),
 	Campground 		= 	require('../models/campground'),
+	Comment			= 	require('../models/comment'),
 	middlewareObj 	= 	require('../middleware'),
 	flashMessageObj = 	require("../messages"),
 	TOOLS			= 	require('../tools'),
@@ -70,11 +71,12 @@ router.get('/', (req, res) => {
 		});
 		
 	}else{
-		Campground.find({}, (err, campgrounds) => {
+		Campground.find({}).populate('author').exec((err, campgrounds) => {
 			if (err || !campgrounds) {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campgrounds try again later');
 			}
 			else {
+				console.log(campgrounds);
 				res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds'});
 			}
 		});
@@ -93,10 +95,6 @@ router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 		flashMessageObj.errorCampgroundMessage(req, res, 'Price of camp must be above 0', '/campgrounds/new');
 	}
 	else {
-		var author = {
-			id: req.user._id,
-			username: req.user.username
-		};
 		//steps made to get location for google maps and store it into database
 		geocoder.geocode(req.body.campground.location, (err, data) => {
 			console.log(req.body.campground.location);
@@ -114,7 +112,7 @@ router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 				var campground = {
 					title: req.body.campground.title,
 					description: req.body.campground.description,
-					author: author,
+					author: req.user.id,
 					price: req.body.campground.price,
 					lat: data[0].latitude,
 					lng: data[0].longitude,
@@ -150,11 +148,13 @@ router.get('/new', middlewareObj.isLoggedIn, (req, res) => {
 router.get('/:id', (req, res) => {
 	//find campground with provided ID
 	//render show template with that campground
-	Campground.findById(req.params.id).populate('comments').exec((err, foundCampground) => {
+	Campground.findById(req.params.id).populate('author').populate({path:'comments',populate:{path:'author'}}).exec((err, foundCampground) => {
 		if (err || !foundCampground) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing campground try again later if problem persists');
 		}
 		else {
+			console.log(foundCampground);
+			// eval(require('locus'));
 			res.render('campgrounds/show', { campground: foundCampground, page:'show' });
 		}
 	});

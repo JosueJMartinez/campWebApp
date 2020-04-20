@@ -40,11 +40,8 @@ router.post('/', middlewareObj.isLoggedIn, (req, res) => {
 				}
 				else {
 					//add username and id to comment
-					newComment.author.id = req.user._id;
-					newComment.author.username = req.user.username;
-					newComment.author.avatar = req.user.avatar;
+					newComment.author = req.user._id;
 					newComment.campground = req.params.id; // store id for campground related to this comment
-					
 					newComment.save();
 					
 					foundCampground.comments.push(newComment);
@@ -66,7 +63,7 @@ router.get('/:comment_id/edit', middlewareObj.checkCommentOwnership, (req,res)=>
 		if(err || !foundComment){
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find comment');
 		}else{
-			res.render('comments/edit', {campground_id:req.params.id, comment:foundComment, form:true});
+			return res.render('comments/edit', {campground_id:req.params.id, comment:foundComment, form:true});
 		}
 	});
 });

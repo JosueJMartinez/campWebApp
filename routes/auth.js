@@ -5,6 +5,7 @@ const   express     	= require('express'),
         middlewareObj	= require('../middleware'),
         flashMessageObj = require('../messages'),
 		Campgrounds		= require('../models/campground.js'),
+	  	Comments		= require('../models/comment.js'),
 		TOOLS			= require('../tools'),
 		tools			= new TOOLS(),
 		Token			= require('../models/token.js'),
@@ -71,8 +72,8 @@ router.get('/', (req, res) => {
 	res.render('landing');
 });
 
-var checkCamps = (campgrounds) =>{
-	if(tools.isEmpty(campgrounds)){
+var checkObject = (objects) =>{
+	if(tools.isEmpty(objects)){
 		return false;
 	}
 	return true;
@@ -186,10 +187,11 @@ router.post('/register', uploadFile, (req, res)=>{
 					}catch(err){
 						return flashMessageObj.errorCampgroundMessage(req, res, 'Could not upload image try again.');
 					}
-				}else{
-					userWeb.avatar = 'https://res.cloudinary.com/josuemartinez/image/upload/v1586652261/102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d.jpg';
-					userWeb.avatarId = '102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d';	
 				}
+				// else{
+				// 	userWeb.avatar = 'https://res.cloudinary.com/josuemartinez/image/upload/v1586652261/102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d.jpg';
+				// 	userWeb.avatarId = '102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d';	
+				// }
 				
 				if(err){
 					return flashMessageObj.errorCampgroundMessage(req, res, err.message);
@@ -256,7 +258,7 @@ router.get('/resend', (req, res, err)=>{
 
 		// Save the token
 		token.save(function (err) {
-			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err.message); }
+			if (err) return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 			sendEmail({user, value:3, token},req, res);
 		});
 	});
@@ -282,7 +284,7 @@ router.post('/login', (req,res,next) => {
 			return flashMessageObj.errorCampgroundMessage(req, res, 'Account is not verified');
 		}
 		req.logIn(user, function(err) {
-			if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err.message); }
+			if (err) return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 			req.flash('success','Welcome back ' + user.username + '!');
 			return res.redirect('/campgrounds');
 		});
@@ -380,12 +382,17 @@ router.post('/reset/:token', function(req, res) {
 //User profile
 //=======================================================
 router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
-	Campgrounds.find({'author.id':req.user.id}, (err, campgrounds)=>{
+	Campgrounds.find({'author':req.user.id}, (err, campgrounds)=>{
 		if(err || !campgrounds){
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campground try again');
 		}else{
-			var haveCamps = checkCamps(campgrounds);
-			res.render('userprofile', { campgrounds: campgrounds, haveCamps:haveCamps, page:'profile'});
+			var haveCamps = checkObject(campgrounds);
+			Comments.find({'author':req.user.id}).populate('campground').exec((err, comments)=>{
+				if(err||!comments) return flashMessageObj.errorCampgroundMessage(req, res, 'Something went wrong finding the comments');
+				var haveComments = checkObject(comments);
+				res.render('userprofile', { campgrounds: campgrounds, haveCamps:haveCamps, page:'profile', haveComments, comments});
+			});
+			
 		}
 	});
 });
@@ -398,12 +405,17 @@ router.get('/profiles/:id', (req, res) => {
 		if (err || !user) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing profile try again later');
 		} else {
-			Campgrounds.find({'author.id':req.params.id}, (err, campgrounds)=>{
+			Campgrounds.find({'author':req.params.id}, (err, campgrounds)=>{
 				if(err || !campgrounds){
 					flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campground try again');
 				}else{
-					var haveCamps = checkCamps(campgrounds);
-					res.render('profiles', { user: user, campgrounds: campgrounds, haveCamps: haveCamps, page:'profiles' });
+					var haveCamps = checkObject(campgrounds);
+					
+					Comments.find({'author':req.params.id}).populate('campground').exec((err, comments)=>{
+						if(err||!comments) return flashMessageObj.errorCampgroundMessage(req, res, 'Something went wrong finding the comments');
+						var haveComments = checkObject(comments);
+						res.render('profiles', {user: user, campgrounds: campgrounds, haveCamps: haveCamps, page:'profiles', haveComments, comments});
+					});
 				}
 			});
 		}

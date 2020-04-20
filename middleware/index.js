@@ -15,7 +15,7 @@ middlewareObj.checkOwnership = (req, res, next) => {
                 flashMessageObj.errorCampgroundMessage(req, res, 'Could not find Campground');
             }
             else {
-                if (foundCampground.author.id.equals(req.user._id)||req.user.isAdmin) {
+                if (foundCampground.author._id.equals(req.user._id)||req.user.isAdmin) {
                     next();
                 }
                 else {
@@ -37,7 +37,7 @@ middlewareObj.checkCommentOwnership = (req, res, next) => {
                 flashMessageObj.errorCampgroundMessage(req, res, 'Could not find comment');
             }
             else {
-                if (foundComment.author.id.equals(req.user._id)||req.user.isAdmin) {
+                if (foundComment.author._id.equals(req.user._id)||req.user.isAdmin) {
                     next();
                 }
                 else {
