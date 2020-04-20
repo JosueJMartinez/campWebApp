@@ -58,7 +58,7 @@ router.post('/', middlewareObj.isLoggedIn, (req, res) => {
 //==============================================
 //EDIT route for comments
 router.get('/:comment_id/edit', middlewareObj.checkCommentOwnership, (req,res)=>{
-	console.log('test error here');
+	// console.log('test error here');
 	Comment.findById(req.params.comment_id,(err, foundComment)=>{
 		if(err || !foundComment){
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find comment');

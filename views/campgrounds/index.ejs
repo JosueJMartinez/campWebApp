@@ -33,6 +33,9 @@
 							<%=camp.title%>
 						</h5>
 						<p class="card-text">
+							<p class='text-truncate'>
+								<%= camp.description %>
+							</p>
 						<% if(currentUser && (currentUser._id.equals(camp.author.id))){ %>
 							<a class='new-link' href='/userprofile'>
 						<% } else { %>

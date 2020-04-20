@@ -76,7 +76,7 @@ router.get('/', (req, res) => {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campgrounds try again later');
 			}
 			else {
-				console.log(campgrounds);
+				//console.log(campgrounds);
 				res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds'});
 			}
 		});
@@ -97,8 +97,8 @@ router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 	else {
 		//steps made to get location for google maps and store it into database
 		geocoder.geocode(req.body.campground.location, (err, data) => {
-			console.log(req.body.campground.location);
-			console.log(data);
+			// console.log(req.body.campground.location);
+			// console.log(data);
 			//console.log(!data.length);
 			if (err || !data.length) {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Invalid Address');
@@ -153,7 +153,7 @@ router.get('/:id', (req, res) => {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing campground try again later if problem persists');
 		}
 		else {
-			console.log(foundCampground);
+			// console.log(foundCampground);
 			// eval(require('locus'));
 			res.render('campgrounds/show', { campground: foundCampground, page:'show' });
 		}

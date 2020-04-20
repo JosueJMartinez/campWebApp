@@ -86,7 +86,7 @@ var checkObject = (objects) =>{
 //=============================================================
 sendEmail = (inputs, req, res) =>{
 	const accessToken = oauth2Client.getAccessToken();
-	console.log(accessToken);
+	// console.log(accessToken);
 
 	//set up mail transport to send emails
 	const smtpTransport = nodemailer.createTransport({
@@ -106,6 +106,7 @@ sendEmail = (inputs, req, res) =>{
 		if (error) {
 			console.log(error);
 			console.log('test2');
+			
 		} else {
 			console.log('Server is ready to take our messages');
 		}
@@ -204,7 +205,7 @@ router.post('/register', uploadFile, (req, res)=>{
 				}
 				User.register(newUser, req.body.password,(err,user)=>{
 					if(err){
-						console.log(err);
+						// console.log(err);
 						flashMessageObj.errorCampgroundMessage(req, res, err.message);
 					}else{
 						var token = new Token({
@@ -359,8 +360,8 @@ router.post('/reset/:token', function(req, res) {
 
 						user.save(function(err) {
 							req.logIn(user, function(err) {
-								console.log(err, user);
-								console.log(req.body);
+								// console.log(err, user);
+								// console.log(req.body);
 								done(err, user);
 							});
 						});
