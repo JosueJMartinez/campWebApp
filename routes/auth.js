@@ -9,6 +9,7 @@ const   express     	= require('express'),
 		TOOLS			= require('../tools'),
 		tools			= new TOOLS(),
 		Token			= require('../models/token.js'),
+	  	Notification 	= require('../models/notification.js'),
 		async 			= require('async');
 
 const	nodemailer 		= require('nodemailer'),
@@ -338,7 +339,7 @@ router.post('/forgot', (req, res, next)=>{
 });
 
 router.get('/reset/:token',(req, res) =>{
-	User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, (err, user) => {
+	User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() }}, (err, user) => {
     	if (!user) {
 			return flashMessageObj.errorCampgroundMessage(req, res, 'Password reset token is invalid or has expired.', '/forgot');
     	}
@@ -349,7 +350,7 @@ router.get('/reset/:token',(req, res) =>{
 router.post('/reset/:token', function(req, res) {
 	async.waterfall([
     	function(done) {
-      		User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+      		User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now()}}, function(err, user) {
 				if (!user) {
 					return flashMessageObj.errorCampgroundMessage(req, res, 'Password reset token is invalid or has expired.');
 				}
@@ -402,7 +403,7 @@ router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
 //route for other users profiles
 //===============================================
 router.get('/profiles/:id', (req, res) => {
-	User.findById(req.params.id, (err, user) => {
+	User.findById(req.params.id).populate('followers').exec((err, user) => {
 		if (err || !user) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing profile try again later');
 		} else {
@@ -415,17 +416,90 @@ router.get('/profiles/:id', (req, res) => {
 					Comments.find({'author':req.params.id}).populate('campground').exec((err, comments)=>{
 						if(err||!comments) return flashMessageObj.errorCampgroundMessage(req, res, 'Something went wrong finding the comments');
 						var haveComments = checkObject(comments);
-						res.render('profiles', {user: user, campgrounds: campgrounds, haveCamps: haveCamps, page:'profiles', haveComments, comments});
+						let isFollower = false;
+						if(req.user){
+							for(const follower of user.followers){
+								
+								if(req.user.id == follower._id){
+									isFollower = true;
+									break;
+								}
+							}
+							console.log(user, isFollower);
+						}
+						res.render('profiles', {user: user, campgrounds: campgrounds, haveCamps: haveCamps, page:'profiles', haveComments, comments, isFollower});
 					});
 				}
 			});
 		}
 	});
 });
+//========================================================================
+//follow user route path	
+//========================================================================
+router.get('/follow/:id', middlewareObj.isLoggedIn, async (req, res)=>{
+	try{
+		let user = await User.findById(req.params.id);
+		user.followers.push(req.user._id);
+		user.save();
+		req.flash('success', 'Successfully followed '+ user.username+ '!');
+		res.redirect('back');
+	}catch(err){
+		flashMessageObj.errorCampgroundMessage(req, res, err.message);
+	}
+});
+// working on removing a follower
+router.get('/unfollow/:id', middlewareObj.isLoggedIn, async (req, res)=>{
+	try{
+		let user = await User.findById(req.params.id);
+		await User.findByIdAndUpdate( req.params.id, { $pull: {followers: req.user.id } } );
+		res.redirect('back');
+	}catch(err){
+		flashMessageObj.errorCampgroundMessage(req, res, err.message);
+	}
 
-//================================================
+});
+
+//========================================================================
+//Notifications page for user and path to get there.
+//========================================================================
+router.get('/notifications', middlewareObj.isLoggedIn, async function(req, res) {
+	try {
+		let user = await User.findById(req.user._id)
+			.populate({
+				path: 'notifications',
+				populate:{path:'user'},
+				options: { sort: { _id: -1 } }
+			})
+			.exec();
+		let allNotifications = user.notifications;
+		res.render('notifications/index', { allNotifications });
+	} catch (err) {
+		flashMessageObj.errorCampgroundMessage(req, res, err.message);
+	}
+});
+//============================================================================
+// handle notification
+//============================================================================
+router.get('/notifications/:id', middlewareObj.isLoggedIn, async function(req, res) {
+	try {
+		let notification = await Notification.findById(req.params.id);
+		let campground = await Campgrounds.findById(req.params.id);
+		notification.isRead = true;
+		notification.save();
+		if(campground){
+			return res.redirect(`/campgrounds/${notification.campground}`);	
+		}
+		let comment = await Comments.findById(notification.comment).populate('campground').exec();
+		return res.redirect(`/campgrounds/${comment.campground._id}`);
+	} catch (err) {
+		flashMessageObj.errorCampgroundMessage(req, res, err.message);
+	}
+});
+
+//============================================================================
 //route to test secret page for logged in or out testing
-//================================================
+//============================================================================
 router.get('/secret', middlewareObj.isLoggedIn, (req, res)=>{
 	res.render('secret');	
 });

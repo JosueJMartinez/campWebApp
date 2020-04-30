@@ -86,8 +86,16 @@ app.use(flash());
 
 //================================================
 //set up to pass through user to ejs files
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
 	res.locals.currentUser = req.user;
+	if(req.user){
+		try{
+			let user = await User.findById(req.user._id).populate({path:'notifications', populate:{path:'user'}, match:{isRead: false}}).exec();
+			res.locals.notifications = user.notifications.reverse();
+		}catch(err){
+			console.log(err.message);
+		}
+	}
 	res.locals.error = req.flash('error');
 	res.locals.success = req.flash('success');
 	next();

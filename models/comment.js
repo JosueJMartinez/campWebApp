@@ -12,8 +12,8 @@ const commentSchema = new mongoose.Schema({
 		ref:'User'
 	},
 	campground:{
-			type:mongoose.Schema.Types.ObjectId,
-			ref:'Campground'
+		type:mongoose.Schema.Types.ObjectId,
+		ref:'Campground'
 	}
 	
 });
@@ -21,7 +21,7 @@ commentSchema.pre('remove', async function(){
 	try{
 		await mongoose.model('Campground').findByIdAndUpdate(this.campground,{
 			$pull:{
-				comments:this._id
+					comments:this._id
 				}	
 			}, (err,foundCampground)=>{
 			if(err){

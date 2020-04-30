@@ -6,7 +6,9 @@ const express 		= 	require('express'),
 	flashMessageObj = 	require("../messages"),
 	TOOLS			= 	require('../tools'),
 	tools			= 	new TOOLS(),
-	NodeGeocoder 	= 	require('node-geocoder');
+	NodeGeocoder 	= 	require('node-geocoder'),
+	User 			= 	require('../models/user'),
+  	Notification	=	require('../models/notification');
 //=============================================
 // Setup for uploading images to webApp
 //=============================================
@@ -77,6 +79,8 @@ router.get('/', (req, res) => {
 			}
 			else {
 				//console.log(campgrounds);
+				// eval(require('locus'));
+			
 				res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds'});
 			}
 		});
@@ -90,16 +94,16 @@ router.get('/', (req, res) => {
 router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 	//get data from form and add to camgrounds database
 	//redirect back to campgrounds
-
+	//eval(require('locus'));
 	if (req.body.campground.price <= 0) {
 		flashMessageObj.errorCampgroundMessage(req, res, 'Price of camp must be above 0', '/campgrounds/new');
 	}
 	else {
 		//steps made to get location for google maps and store it into database
 		geocoder.geocode(req.body.campground.location, (err, data) => {
-			// console.log(req.body.campground.location);
-			// console.log(data);
-			//console.log(!data.length);
+			// 	console.log(req.body.campground.location);
+			// 	console.log(data);
+			//	console.log(!data.length);
 			if (err || !data.length) {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Invalid Address');
 			}
@@ -121,13 +125,34 @@ router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 					img_id: result.public_id
 				};
 				
-				Campground.create(campground, (err, newCampground) => {
+				Campground.create(campground, async (err, newCampground) => {
 					if (err || !newCampground) {
 						flashMessageObj.errorCampgroundMessage(req, res, 'Could not create campground try if persists try again later');
 					}
 					else {
-						req.flash('success', 'Added new campground');
-						res.redirect('/campgrounds/'+newCampground.id);
+						try{
+							let user = await User.findById(req.user._id).populate('followers').exec();
+							let newNotification = {
+								user: req.user._id,
+								campground: newCampground._id
+							}
+//====================================================================
+//New code added for notifications go through user followers and push 
+//notification to let them campground was creater
+//====================================================================
+							let notification = await Notification.create(newNotification);
+							for(const follower of user.followers) {
+								
+								follower.notifications.push(notification);
+								follower.save();
+							}
+							//redirect back to campgrounds page
+							req.flash('success', 'Added new campground');
+							res.redirect(`/campgrounds/${newCampground._id}`);
+						} catch(err) {
+							flashMessageObj.errorCampgroundMessage(req, res, err.message);
+						}
+						
 					}
 				});
 			});
@@ -148,14 +173,24 @@ router.get('/new', middlewareObj.isLoggedIn, (req, res) => {
 router.get('/:id', (req, res) => {
 	//find campground with provided ID
 	//render show template with that campground
-	Campground.findById(req.params.id).populate('author').populate({path:'comments',populate:{path:'author'}}).exec((err, foundCampground) => {
+	Campground.findById(req.params.id).populate('author').populate({path:'comments',populate:{path:'author'}}).exec(async (err, foundCampground) => {
 		if (err || !foundCampground) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing campground try again later if problem persists');
 		}
 		else {
-			// console.log(foundCampground);
-			// eval(require('locus'));
-			res.render('campgrounds/show', { campground: foundCampground, page:'show' });
+			//im working right here
+			let isFollower = false;
+			if(req.user){
+				for(const follower of foundCampground.author.followers){
+					if(req.user.id == follower){
+						isFollower = true;
+						break;
+					}
+				}
+			}
+			
+			console.log(foundCampground.author.followers, isFollower);
+			res.render('campgrounds/show', { campground: foundCampground, page:'show', isFollower });
 		}
 	});
 });

@@ -1,9 +1,11 @@
-const   express     = require('express'),
-        router      = express.Router({mergeParams:true}),
-        Campground	= require('../models/campground'),
-        Comment     = require('../models/comment'),
-        middlewareObj = require('../middleware'),
-        flashMessageObj = require('../messages');
+const   express     	= require('express'),
+        router      	= express.Router({mergeParams:true}),
+        Campground		= require('../models/campground'),
+        Comment     	= require('../models/comment'),
+        middlewareObj 	= require('../middleware'),
+        flashMessageObj = require('../messages'),
+	  	User 			= require('../models/user'),
+	    Notification 	= require('../models/notification');
 
 //========================================
 //Comments routes
@@ -34,7 +36,7 @@ router.post('/', middlewareObj.isLoggedIn, (req, res) => {
 		}
 		else {
 			
-			Comment.create(req.body.comment, (err, newComment) => {
+			Comment.create(req.body.comment, async (err, newComment) => {
 				if (err|| !newComment) {
 					flashMessageObj.errorCampgroundMessage(req, res, 'Could not create new comment');
 				}
@@ -43,12 +45,25 @@ router.post('/', middlewareObj.isLoggedIn, (req, res) => {
 					newComment.author = req.user._id;
 					newComment.campground = req.params.id; // store id for campground related to this comment
 					newComment.save();
-					
 					foundCampground.comments.push(newComment);
 					foundCampground.save();
+					try{
+						let user = await User.findById(req.user._id).populate('followers').exec();
+						let newNotification = {
+							user: req.user._id,
+							comment: newComment._id
+						};
+						let notification = await Notification.create(newNotification);
+						for(const follower of user.followers){
+							follower.notifications.push(notification);
+							follower.save();
+						}
+						req.flash('success','Created new comment');
+						res.redirect('/campgrounds/' + req.params.id);
+					}catch(err){
+						flashMessageObj.errorCampgroundMessage(req, res, err.message);
+					}
 					
-					req.flash('success','Created new comment');
-					res.redirect('/campgrounds/' + req.params.id);
 				}
 			});
 		}

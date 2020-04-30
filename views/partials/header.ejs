@@ -27,22 +27,40 @@
 				</li>
 			</ul>
 			<ul class="navbar-nav ">
-				<%if(!currentUser){%>
-					<li class="nav-item <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">
+				<% if(!currentUser){ %>
+					<li class = "nav-item <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">
 						<a class="nav-link" href="/login">Login</a>
 					</li>
 					<li class="nav-item <%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>">
 						<a class="nav-link" href="/register">Sign Up</a>
 					</li>
-				<% }else{%>
+				<% }else{ %>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle <%=(notifications.length > 0) ? 'active' : '' %>" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						  Notifications <span class='badge badge-secondary'><%= notifications.length %></span>
+						</a>
+						<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<a class="dropdown-item" href="/notifications">Notifications Page</a>
+							<% if(notifications.length > 0){ %>
+								<div class="dropdown-divider"></div>
+							<% } %>
+							<% notifications.forEach(notification => { %>
+								<% if(notification.campground){ %>
+									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new campground!</a>
+								<% } else{ %>
+									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new comment!</a>
+								<% } %>
+							<% }); %>
+						</div>
+				  	</li>
 					<li class="nav-item <%= typeof page !== 'undefined' && page === 'profile' ? 'active' : '' %>">
 						<a class="nav-link" href='/userprofile'>
-							<% if(currentUser.isAdmin){%>
+							<% if(currentUser.isAdmin){ %>
 								Administrator:
 							<% } else{ %>
 								Signed in as
 							<% } %>
-								<%= currentUser.username%>
+								<%= currentUser.username %>
 						</a>
 					</li>
 
