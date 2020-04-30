@@ -51,7 +51,7 @@
 								</a>
 							<% } %>
 						<% } %>
-						<div class='d-inline float-right'>
+						<div class='<%= currentUser ? "d-inline float-right" : "text-right" %>'>
 							<a class='btn btn-sm btn-success' href='/campgrounds/<%= campground._id%>/comments/new'>
 								Leave a Review
 							</a>
