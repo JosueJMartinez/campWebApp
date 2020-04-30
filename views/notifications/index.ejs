@@ -1,0 +1,28 @@
+<% include ../partials/header %>
+	<div class='row justify-content-center'>
+		<div class='col-12 mt-4 text-center'>
+			<h2>
+				Notifications
+			</h2>
+		</div>
+		<div class='col-7'>
+			<ul class="list-group">
+				<% if(allNotifications.length > 0){ %>
+					<% allNotifications.forEach(notification => { %>
+						<% if(notification.campground){ %>
+							<a href="/notifications/<%= notification._id%>" class="list-group-item list-group-item-action alt-bg-color"><%=notification.user.username %> has a new campground!</a>
+						<% } else{ %>
+							<a href="/notifications/<%= notification._id%>" class="list-group-item list-group-item-action alt-bg-color"><%=notification.user.username %> has a new comment!</a>
+						<% } %>
+					<%});%>
+				<% } else{%>
+					<li class="list-group-item text-center">No notifications</li>
+				<% } %>
+				
+				
+			</ul>
+			<a href='/campgrounds'>Go back</a>	
+			<a class='float-right' href='/forgot'>Forgot Password</a>	
+		</div>
+	</div>
+<%include ../partials/footer%>
