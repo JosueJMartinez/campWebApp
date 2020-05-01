@@ -33,9 +33,12 @@
 							<%=camp.title%>
 						</h5>
 						<p class="card-text">
-							<p class='text-truncate'>
+							<div class='text-truncate'>
 								<%= camp.description %>
-							</p>
+							</div>
+						<div class='my-2'>
+           					<span class="badge badge-primary"><i class="fas fa-thumbs-up"></i> <%= camp.likes.length %></span>
+       					</div>
 						<% if(currentUser && (currentUser._id.equals(camp.author.id))){ %>
 							<a class='new-link' href='/userprofile'>
 						<% } else { %>

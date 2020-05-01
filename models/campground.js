@@ -22,7 +22,11 @@ const campGndSchema = new mongoose.Schema({
 		type:mongoose.Schema.Types.ObjectId,
 		ref:'User'
 	},
-	price:String
+	price:String,
+	likes:[{
+		type:mongoose.Schema.Types.ObjectId,
+		ref:'User'
+	}]
 });
 
 campGndSchema.pre('remove', async function(){

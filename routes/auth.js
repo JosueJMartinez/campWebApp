@@ -190,10 +190,6 @@ router.post('/register', uploadFile, (req, res)=>{
 						return flashMessageObj.errorCampgroundMessage(req, res, 'Could not upload image try again.');
 					}
 				}
-				// else{
-				// 	userWeb.avatar = 'https://res.cloudinary.com/josuemartinez/image/upload/v1586652261/102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d.jpg';
-				// 	userWeb.avatarId = '102771372-profile-anonymous-face-icon-gray-silhouette-person-male-businessman-profile-default-avatar-photo-pla_b1yl9d';	
-				// }
 				
 				if(err){
 					return flashMessageObj.errorCampgroundMessage(req, res, err.message);

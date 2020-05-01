@@ -173,7 +173,7 @@ router.get('/new', middlewareObj.isLoggedIn, (req, res) => {
 router.get('/:id', (req, res) => {
 	//find campground with provided ID
 	//render show template with that campground
-	Campground.findById(req.params.id).populate('author').populate({path:'comments',populate:{path:'author'}}).exec(async (err, foundCampground) => {
+	Campground.findById(req.params.id).populate('author likes').populate({path:'comments',populate:{path:'author'}}).exec(async (err, foundCampground) => {
 		if (err || !foundCampground) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing campground try again later if problem persists');
 		}
@@ -266,6 +266,30 @@ router.delete('/:id', middlewareObj.checkOwnership, (req, res) => {
 		});
 		
 	});
+});
+
+//============================================================
+//Routes for Likes buttons
+//============================================================
+router.post('/:id/like', middlewareObj.isLoggedIn, async (req, res)=>{
+	try{
+		console.log('test');
+		let campground = await Campground.findById(req.params.id);
+		let foundUserLike = campground.likes.some(like =>{
+			return like.equals(req.user._id);
+		});
+		
+		if(foundUserLike){
+			campground.likes.pull(req.user.id);
+		}else{
+			req.flash('success','Post has been liked');
+			campground.likes.push(req.user.id);
+		}
+		campground.save();
+		res.redirect('back');
+	}catch(err){
+		flashMessageObj.errorCampgroundMessage(req, res, err.message);
+	}
 });
 
 function escapeRegex(text) {
