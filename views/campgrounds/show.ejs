@@ -70,9 +70,7 @@
 
 						<% if(currentUser && (currentUser.isAdmin||campground.author._id.equals(currentUser._id))){ %>
 							<a class='btn btn-sm btn-warning' href='/campgrounds/<%= campground._id%>/edit'>Edit</a>
-							<form action='/campgrounds/<%=campground._id%>?_method=DELETE' method='POST'>
-								<button class='btn btn-sm btn-danger'>Delete</button>
-							</form>
+							
 							<% } %>
 						<% if(currentUser && !(campground.author._id.equals(currentUser._id))){ %>
 							<% if(!isFollower){ %>

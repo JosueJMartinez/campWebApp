@@ -35,6 +35,9 @@
 
 			</form>
 			<a href='/campgrounds/<%=campground._id%>'>Go back</a>
+			<form class='float-right' action='/campgrounds/<%=campground._id%>?_method=DELETE' method='POST'>
+				<button class='btn btn-sm btn-danger'>Delete</button>
+			</form>
 		</div>
 
 
