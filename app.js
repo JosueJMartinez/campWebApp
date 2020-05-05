@@ -1,11 +1,12 @@
 /*
 	Things to do:
 	*	Need to fix bug where token does not expire to verify new user
+	*	Need to do error checking for sign up with correct email address and username
 	*	Fix passport error messages
 	*	Update server side to check for valid inputs if client side javascript is turned off
 	*	Need to work in AJAX to make site more responsive
 	*	Keep updating profile page for edits on information
-	*	More features need to be added. Possible like buttons
+	*	More features need to be added
 */
 
 require('dotenv').config();
@@ -26,6 +27,7 @@ const 	express 			= require('express'),
 const 	commentRoutes 		= require('./routes/comments'),
 		authRoutes 			= require('./routes/auth'),
 		campRoutes 			= require('./routes/campgrounds'),
+		reviewRoutes		= require('./routes/reviews'),
 		middlewareObj 		= require('./middleware'),
 		flashMessageObj 	= require('./messages');
 
@@ -125,6 +127,7 @@ mongoose
 app.use('/campgrounds', campRoutes);
 app.use('/campgrounds/:id/comments', commentRoutes);
 app.use('/', authRoutes);
+app.use('/campgrounds/:id/reviews', reviewRoutes);
 
 
 

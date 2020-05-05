@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
-const Comment = require('./comment');
+const 	mongoose = require('mongoose'),
+		Comment = require('./comment'),
+		Review = require('./review');
 
 //Schema setup
 const campGndSchema = new mongoose.Schema({
@@ -26,7 +27,15 @@ const campGndSchema = new mongoose.Schema({
 	likes:[{
 		type:mongoose.Schema.Types.ObjectId,
 		ref:'User'
-	}]
+	}],
+	reviews: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Review"
+    }],
+    rating: {
+        type: Number,
+        default: 0
+    }
 });
 
 campGndSchema.pre('remove', async function(){
@@ -36,6 +45,11 @@ campGndSchema.pre('remove', async function(){
     			$in: this.comments
     		}
     	});
+		await Review.remove({
+			_id:{
+				$in: this.reviews
+			}
+		});
 	}catch(err){
     	throw new Error('remove failed');
     }

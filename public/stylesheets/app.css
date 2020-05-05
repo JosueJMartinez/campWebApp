@@ -1,3 +1,4 @@
+@import url(kit.fontawesome.com/48c6529706.js);
 html {
 	position: relative;
 	min-height: 100%;
@@ -16,6 +17,14 @@ body {
 	height: 60px;
 	line-height: 60px; /* Vertically center the text there */
 	background-color: #f5f5f5;
+}
+
+.checked {
+    color: orange;
+}
+
+.half{
+	color: orange;
 }
 
 .thumbnail img {
@@ -49,6 +58,26 @@ div a + form {
 	height: 400px;
 	width: 100%;
 }
+
+.starrating > input {display: none;}  /* Remove radio buttons */
+
+.starrating > label:before { 
+  margin: 2px;
+  font-size: 8em;
+  font-family: FontAwesome;
+  display: inline-block; 
+}
+
+.starrating > label
+{
+  color: #222222; /* Start color when not clicked */
+}
+
+.starrating > input:checked ~ label
+{ color: #ffca08 ; } /* Set yellow color when star checked */
+
+.starrating > input:hover ~ label
+{ color: #ffca08 ;  } /* Set yellow color when star hover */
 
 .alt-bg-color:nth-child(2n+1) {
 	background: #c0c0c0;

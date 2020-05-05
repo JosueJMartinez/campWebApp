@@ -19,6 +19,7 @@ const commentSchema = new mongoose.Schema({
 });
 commentSchema.pre('remove', async function(){
 	try{
+		eval(require('locus'));
 		await mongoose.model('Campground').findByIdAndUpdate(this.campground,{
 			$pull:{
 					comments:this._id

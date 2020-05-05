@@ -18,4 +18,15 @@ Tools.prototype.mergeProp = function(obj1, obj2) { //obj1 is destination, obj2 i
   return obj1 //returns {a: 1, b: 4, c: 3, d: 4} should have {...b: 2...}
 }
 
+Tools.prototype.calcAvg = (reviews) => {
+	if(reviews.length===0){
+		return 0;
+	}
+	var sum = 0;
+	reviews.forEach(review=>{
+		sum += review.rating;
+	});
+	return sum/reviews.length;
+}
+
 module.exports = Tools;

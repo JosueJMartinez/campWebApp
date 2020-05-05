@@ -1,0 +1,60 @@
+<% include ../partials/header %>
+	
+	<div class='card mt-1'>
+		<div class='card-body'>
+			<div class='card-title'>
+				<h5 class='card-title display-4'>
+					Reviews for: <%=campground.title%>
+				</h5>
+			</div>
+			<div class='card-subtitle'>
+				<div class='float-right'>
+
+
+					<% if(currentUser){ %>
+					<%let userReview = campground.reviews.find(review =>{ return review.author._id.equals(currentUser._id)}) %>
+						<% if(userReview){ %>
+								<a class="btn btn-warning btn-sm" href="/campgrounds/<%= campground._id %>/reviews/<%= userReview._id%>/edit">
+									Edit Review
+								</a>
+						<% } else {%>
+								<a class="btn btn-primary btn-sm" href="/campgrounds/<%= campground._id %>/reviews/new">
+									Write a New Review
+								</a>
+						<% } %>
+
+					<% } %>
+				</div>
+				<h5>
+					Current campground rating: <strong><%= campground.rating.toFixed(2) %></strong>
+				</h5>
+			</div>
+			<hr class='my-3'>
+			<ul class="list-unstyled">
+				<% s = 1; campground.reviews.forEach(function(review){ %>
+				<li class="media border <%= (s%2!==0)?'alt-bg':''%>">
+					<%s++;%>
+					<div class="media-body col-3">
+						<div>
+							<%- '<span class="fas fa-star checked"></span>'.repeat(review.rating) %><%- '<span class="far fa-star checked"></span>'.repeat(5 - review.rating) %>
+						</div>
+						<div>
+							Review by: <strong><a class='new-link' href="<%=(currentUser && (currentUser._id.equals(review.author._id))) ?'/userprofile' : '/profiles/'+review.author._id%>"><%= review.author.username%></a></strong>
+						</div>
+						<div>
+							<%= moment(campground.updatedAt).fromNow()%>
+						</div>
+					</div>
+					<div class='col-9'>
+						<p>
+							<%= review.text %>
+						</p>
+					</div>
+				</li>
+				<% }); %>
+			</ul>
+			<a href='/campgrounds'>Go back</a>
+		</div>
+	</div>
+	
+<%include ../partials/footer%>

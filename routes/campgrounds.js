@@ -173,7 +173,10 @@ router.get('/new', middlewareObj.isLoggedIn, (req, res) => {
 router.get('/:id', (req, res) => {
 	//find campground with provided ID
 	//render show template with that campground
-	Campground.findById(req.params.id).populate('author likes').populate({path:'comments',populate:{path:'author'}}).exec(async (err, foundCampground) => {
+	Campground.findById(req.params.id).populate('author likes')
+		.populate({path: 'reviews', options:{sort:{createdAt: -1}}, populate:{path: 'author', select: 'username'}})
+		.populate({path: 'comments', populate:{path: 'author'}})
+		.exec(async (err, foundCampground) => {
 		if (err || !foundCampground) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing campground try again later if problem persists');
 		}
@@ -203,12 +206,14 @@ router.get('/:id/edit', middlewareObj.checkOwnership, (req, res) => {
 	});
 });
 
-//======================================================
+//=========================================================================
 //UPDATE Route something is wrong here where I am not passing variables.
 router.put('/:id', middlewareObj.checkOwnership, uploadFile, (req, res) => {
 	if (req.body.campground.price <= 0) {
 		return flashMessageObj.errorCampgroundMessage(req, res, 'Price is not above $0.00', '/campgrounds/' + req.params.id + '/edit');
 	}
+	//just in case for data manipulation
+	delete req.body.campground.rating;
 	geocoder.geocode(req.body.campground.location, (err, data) => {
 		if (err || !data.length) {
 			return flashMessageObj.errorCampgroundMessage(req, res, 'Invalid address.');

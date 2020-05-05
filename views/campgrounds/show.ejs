@@ -10,18 +10,33 @@
 				<div class='card-body'>
 					<h5 class='card-title display-4'>
 							<%=campground.title%>
-					</h5>	
-					<h4 class='card-subtitle'>
-						<% if(currentUser && (currentUser._id.equals(campground.author._id))){ %>
-								<a class='new-link' href='/userprofile'>
-						<% } else { %>
-								<a class='new-link' href='/profiles/<%=campground.author._id%>'>
-						<% } %>
-							<em>Created by:
-								<%=campground.author.username %></em></a>
-						
-						<span class='float-right'>$<%= campground.price %> per night</span>
-					</h4>
+					</h5>
+					<div class='card-subtitle'>
+						<h4>
+							<% if(currentUser && (currentUser._id.equals(campground.author._id))){ %>
+									<a class='new-link' href='/userprofile'>
+							<% } else { %>
+									<a class='new-link' href='/profiles/<%=campground.author._id%>'>
+							<% } %>
+								<em>Created by:
+									<%=campground.author.username %></em></a>
+
+							<span class='float-right'>$<%= campground.price %> per night</span>
+						</h4>
+						<h5>
+							<% if(campground.reviews.length === 0){ %>
+									<em>No reviews yet</em>
+							<% } else{ %>
+									<span class="fa<%=((campground.rating>.75)||((campground.rating>=0.5)&&(campground.rating<=0.75)))? 's': 'r' %> fa-star<%=((campground.rating>=0.5)&&(campground.rating<=0.75))?'-half-alt':'' %> checked"></span>
+									<span class="fa<%=((campground.rating>1.75)||((campground.rating>=0.5)&&(campground.rating<=0.75)))? 's': 'r' %> fa-star<%=((campground.rating>=1.5)&&(campground.rating<=1.75))?'-half-alt':'' %> checked"></span>
+									<span class="fa<%=((campground.rating>2.75)||((campground.rating>=2.5)&&(campground.rating<=2.75)))? 's': 'r' %> fa-star<%=((campground.rating>=2.5)&&(campground.rating<=2.75))?'-half-alt':'' %> checked"></span>
+									<span class="fa<%=((campground.rating>3.75)||((campground.rating>=3.5)&&(campground.rating<=3.75)))? 's': 'r' %> fa-star<%=((campground.rating>=3.5)&&(campground.rating<=3.75))?'-half-alt':'' %> checked"></span>
+									<span class="fa<%=((campground.rating>4.75)||((campground.rating>=4.5)&&(campground.rating<=4.75)))? 's': 'r' %> fa-star<%=((campground.rating>=4.5)&&(campground.rating<=4.75))?'-half-alt':'' %> checked"></span>
+							<% } %>
+							<em>(total reviews: <%= campground.reviews.length %>)</em>
+						</h5>
+							
+					</div>
 					
 					<hr class="my-3">
 					<p>
@@ -75,7 +90,7 @@
 						
 						<div class='<%= currentUser ? "d-inline float-right" : "text-right" %>'>
 							<a class='btn btn-sm btn-success' href='/campgrounds/<%= campground._id%>/comments/new'>
-								Leave a Review
+								Leave a Comment
 							</a>
 						</div>
 					</div>
@@ -122,9 +137,67 @@
 						  </li>
 					  	<% }); %>
 					</ul>
-					<a href='/campgrounds'>Go back</a>
+					
 				</div>
 				
+			</div>
+				
+			<div class='card mt-1'>
+				<div class='card-body'>
+					<div class='card-title'>
+						<h3>
+							Latest Reviews:
+						</h3>
+					</div>
+					<div class='card-subtitle'>
+						<div class='float-right'>
+							
+							
+							<% if(currentUser){ %>
+							<%let userReview = campground.reviews.find(review =>{ return review.author._id.equals(currentUser._id)}) %>
+								<% if(userReview){ %>
+										<a class="btn btn-warning btn-sm" href="/campgrounds/<%= campground._id %>/reviews/<%= userReview._id%>/edit">
+											Edit Review
+										</a>
+								<% } else {%>
+										<a class="btn btn-primary btn-sm" href="/campgrounds/<%= campground._id %>/reviews/new">
+											Write a New Review
+										</a>
+								<% } %>
+                            	
+							<% } %>
+							<a href="/campgrounds/<%= campground._id %>/reviews"><i class="fa fa-search" aria-hidden="true"></i> See all reviews</a>
+						</div>
+						<h5>
+							Current campground rating: <strong><%= campground.rating.toFixed(2) %></strong>
+						</h5>
+					</div>
+					<hr class='my-3'>
+					<ul class="list-unstyled">
+						<% let s = 1; campground.reviews.slice(0, 5).forEach(function(review){ %>
+						<li class="media border <%= (s%2!==0)?'alt-bg':''%>">
+							<%s++;%>
+							<div class="media-body col-3">
+								<div>
+									<%- '<span class="fas fa-star checked"></span>'.repeat(review.rating) %><%- '<span class="far fa-star checked"></span>'.repeat(5 - review.rating) %>
+								</div>
+								<div>
+									Review by: <strong><a class='new-link' href="<%=(currentUser && (currentUser._id.equals(review.author._id))) ?'/userprofile' : '/profiles/'+review.author._id%>"><%= review.author.username%></a></strong>
+								</div>
+								<div>
+									<%= moment(campground.updatedAt).fromNow()%>
+								</div>
+							</div>
+							<div class='col-9'>
+								<p>
+									<%= review.text %>
+								</p>
+							</div>
+						</li>
+						<% }); %>
+					</ul>
+					<a href='/campgrounds'>Go back</a>
+				</div>
 			</div>
 
 			

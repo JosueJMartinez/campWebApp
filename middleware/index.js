@@ -1,6 +1,7 @@
-const Campground    = require('../models/campground'), 
-    Comment         = require('../models/comment'),
-    flashMessageObj = require('../messages');
+const 	Campground    	= require('../models/campground'), 
+		Comment         = require('../models/comment'),
+  		flashMessageObj = require('../messages'),
+		Review			= require('../models/review');
 
 
 
@@ -61,5 +62,51 @@ middlewareObj.isLoggedIn = (req, res, next) => {
 	return flashMessageObj.errorCampgroundMessage(req, res, 'Please login', '/login');
 
 };
+
+middlewareObj.checkReviewExistence = async (req, res, next) =>{
+	try{
+		if(req.isAuthenticated()){
+			let campground = await Campground.findById(req.params.id).populate('reviews').exec();
+			if(!campground){
+				return flashMessageObj.errorCampgroundMessage(req, res, 'Campground does not exist');
+			}
+			let userReview = campground.reviews.some(review =>{
+				return review.author.equals(req.user._id);
+			});
+			
+			if(userReview){
+				return flashMessageObj.errorCampgroundMessage(req, res, 'You have already wrote a review',`/campgrounds/${req.params.id}`);
+			}
+			return next();
+		}
+		return flashMessageObj.errorCampgroundMessage(req, res, 'Please login','/login');
+	}catch(err){
+		
+		return flashMessageObj.errorCampgroundMessage(req, res, err.message);
+	}
+};
+
+middlewareObj.checkReviewOwnership = async (req, res, next) =>{
+	try{
+		if (req.isAuthenticated()) {
+	    	let review = await Review.findById(req.params.review_id);
+			
+            if (!review) {
+                return flashMessageObj.errorCampgroundMessage(req, res, 'Could not find comment');
+            }
+			if (!(review.author.equals(req.user._id)||req.user.isAdmin)) {
+				return flashMessageObj.errorCampgroundMessage(req, res, 'Access denied');
+			}
+			else {
+				next();
+			}       
+    	}
+    	else {
+			return flashMessageObj.errorCampgroundMessage(req, res, 'Please login first', '/login');
+		}
+	}catch(err){
+		return flashMessageObj.errorCampgroundMessage(req, res, err.message);
+	}
+}
 
 module.exports = middlewareObj;

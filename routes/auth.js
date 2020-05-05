@@ -169,7 +169,7 @@ router.get('/register',(req,res)=>{
 
 router.post('/register', uploadFile, (req, res)=>{
 	var userWeb = req.body.user;
-	userWeb.username = req.body.username;
+	userWeb.username = req.body.username.trim();
 	if(req.body.password !== req.body.rePassword){
 		flashMessageObj.errorCampgroundMessage(req, res, "Passwords do not match up");
 	}else{

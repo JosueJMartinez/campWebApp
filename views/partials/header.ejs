@@ -22,7 +22,7 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto">
 				<li class="nav-item <%= typeof page !== 'undefined' && page === 'campgrounds' ? 'active' : '' %>">
-					<a class="nav-link" href="/campgrounds">Home
+					<a class="nav-link" href="/campgrounds"><span class='fas fa-home'></span> Home
 						<span class="sr-only">(current)</span>
 					</a>
 				</li>
@@ -30,10 +30,10 @@
 			<ul class="navbar-nav ">
 				<% if(!currentUser){ %>
 					<li class = "nav-item <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">
-						<a class="nav-link" href="/login">Login</a>
+						<a class="nav-link" href="/login"><span class='fas fa-user'></span> Login</a>
 					</li>
 					<li class="nav-item <%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>">
-						<a class="nav-link" href="/register">Sign Up</a>
+						<a class="nav-link" href="/register"><span class='fas fa-user-plus'></span> Sign Up</a>
 					</li>
 				<% }else{ %>
 					<li class="nav-item dropdown">
@@ -73,7 +73,7 @@
 			</ul>
 			<form class="form-inline my-2 my-lg-0" action='/campgrounds' method='GET'>
 				<input class="form-control mr-sm-2" type="search" name='search' placeholder="Search Campgrounds..." aria-label="Search">
-				<button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Search</button>
+				<button class="btn btn-outline-secondary my-2 my-sm-0" type="submit"><span class='fas fa-search'></span> Search</button>
 			</form>
 		</div>
 	</div>
