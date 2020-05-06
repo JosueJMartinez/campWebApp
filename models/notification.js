@@ -13,6 +13,10 @@ var notificationSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref:'Comment'
 	},
+	review:{
+		type: mongoose.Schema.Types.ObjectId,
+		ref:'Review'
+	},
 	isRead: { 
 		type: Boolean, 
 		default: false 

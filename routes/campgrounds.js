@@ -181,7 +181,6 @@ router.get('/:id', (req, res) => {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing campground try again later if problem persists');
 		}
 		else {
-			//im working right here
 			let isFollower = false;
 			if(req.user){
 				for(const follower of foundCampground.author.followers){

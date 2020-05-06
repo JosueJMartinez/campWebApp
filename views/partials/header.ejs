@@ -48,8 +48,10 @@
 							<% notifications.forEach(notification => { %>
 								<% if(notification.campground){ %>
 									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new campground!</a>
-								<% } else{ %>
+								<% } else if(notification.comment){ %>
 									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new comment!</a>
+								<% } else{%>
+									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new review!</a>
 								<% } %>
 							<% }); %>
 						</div>

@@ -56,7 +56,7 @@ middlewareObj.checkCommentOwnership = (req, res, next) => {
 //------------------------------------------------------
 //check to see if user is logged in
 middlewareObj.isLoggedIn = (req, res, next) => {
-    if (req.isAuthenticated()) {
+	if (req.isAuthenticated()) {
         return next();
     }
 	return flashMessageObj.errorCampgroundMessage(req, res, 'Please login', '/login');
@@ -65,6 +65,7 @@ middlewareObj.isLoggedIn = (req, res, next) => {
 
 middlewareObj.checkReviewExistence = async (req, res, next) =>{
 	try{
+		eval(require('locus'));
 		if(req.isAuthenticated()){
 			let campground = await Campground.findById(req.params.id).populate('reviews').exec();
 			if(!campground){
@@ -73,7 +74,6 @@ middlewareObj.checkReviewExistence = async (req, res, next) =>{
 			let userReview = campground.reviews.some(review =>{
 				return review.author.equals(req.user._id);
 			});
-			
 			if(userReview){
 				return flashMessageObj.errorCampgroundMessage(req, res, 'You have already wrote a review',`/campgrounds/${req.params.id}`);
 			}
@@ -92,14 +92,14 @@ middlewareObj.checkReviewOwnership = async (req, res, next) =>{
 	    	let review = await Review.findById(req.params.review_id);
 			
             if (!review) {
-                return flashMessageObj.errorCampgroundMessage(req, res, 'Could not find comment');
+                return flashMessageObj.errorCampgroundMessage(req, res, 'Could not find review');
             }
 			if (!(review.author.equals(req.user._id)||req.user.isAdmin)) {
 				return flashMessageObj.errorCampgroundMessage(req, res, 'Access denied');
 			}
-			else {
-				next();
-			}       
+			
+			next();
+		      
     	}
     	else {
 			return flashMessageObj.errorCampgroundMessage(req, res, 'Please login first', '/login');

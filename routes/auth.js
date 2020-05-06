@@ -6,6 +6,7 @@ const   express     	= require('express'),
         flashMessageObj = require('../messages'),
 		Campgrounds		= require('../models/campground.js'),
 	  	Comments		= require('../models/comment.js'),
+	  	Review			= require('../models/review.js'),
 		TOOLS			= require('../tools'),
 		tools			= new TOOLS(),
 		Token			= require('../models/token.js'),
@@ -480,14 +481,22 @@ router.get('/notifications', middlewareObj.isLoggedIn, async function(req, res) 
 router.get('/notifications/:id', middlewareObj.isLoggedIn, async function(req, res) {
 	try {
 		let notification = await Notification.findById(req.params.id);
-		let campground = await Campgrounds.findById(req.params.id);
+		let campground = await Campgrounds.findById(notification.campground);
 		notification.isRead = true;
 		notification.save();
 		if(campground){
 			return res.redirect(`/campgrounds/${notification.campground}`);	
 		}
 		let comment = await Comments.findById(notification.comment).populate('campground').exec();
-		return res.redirect(`/campgrounds/${comment.campground._id}`);
+		if(comment){
+			return res.redirect(`/campgrounds/${comment.campground._id}`);	
+		}
+		let review = await 	Review.findById(notification.review).populate('campground').exec();
+		if(review){
+			return res.redirect(`/campgrounds/${review.campground._id}`);
+		}
+		flashMessageObj.errorCampgroundMessage(req, res, 'Cannot not find notification');
+		
 	} catch (err) {
 		flashMessageObj.errorCampgroundMessage(req, res, err.message);
 	}

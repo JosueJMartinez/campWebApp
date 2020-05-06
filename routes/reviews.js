@@ -2,6 +2,8 @@ const 	express = 			require("express"),
 		router = 			express.Router({mergeParams: true}),
 		Campground =		require("../models/campground"),
 		Review = 			require("../models/review"),
+	  	User =				require('../models/user'),
+	  	Notification =		require('../models/notification'),
 		flashMessageObj = 	require("../messages"),
 		middlewareObj = 		require("../middleware"),
 	  	TOOLS = 			require('../tools'),
@@ -47,12 +49,21 @@ router.post('/', middlewareObj.isLoggedIn, middlewareObj.checkReviewExistence, a
 		req.body.review.author = req.user._id;
 		req.body.review.campground = campground._id;
 		let review = await Review.create(req.body.review);
-		
 		campground.reviews.push(review);
 		let avgRating = tools.calcAvg(campground.reviews);
 		campground.rating = avgRating;
 		await campground.save();
-		
+		let user = await User.findById(req.user._id).populate('followers').exec();
+		let newNotification ={
+			user:req.user._id,
+			review: review._id
+		}
+		let notification = await Notification.create(newNotification);
+		for(const follower of user.followers){
+			follower.notifications.push(notification);
+			await follower.save();
+		}
+		eval(require('locus'));
 		req.flash('success', 'Review has been successfully added');
 		res.redirect('/campgrounds/'+campground._id);
 	}catch(err){
