@@ -53,16 +53,7 @@ router.post('/', middlewareObj.isLoggedIn, middlewareObj.checkReviewExistence, a
 		let avgRating = tools.calcAvg(campground.reviews);
 		campground.rating = avgRating;
 		await campground.save();
-		let user = await User.findById(req.user._id).populate('followers').exec();
-		let newNotification ={
-			user:req.user._id,
-			review: review._id
-		}
-		let notification = await Notification.create(newNotification);
-		for(const follower of user.followers){
-			follower.notifications.push(notification);
-			await follower.save();
-		}
+		tools.addNotification({user:req.user._id, review: review._id});
 		req.flash('success', 'Review has been successfully added');
 		res.redirect('/campgrounds/'+campground._id);
 	}catch(err){

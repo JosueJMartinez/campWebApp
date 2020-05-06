@@ -5,7 +5,9 @@ const   express     	= require('express'),
         middlewareObj 	= require('../middleware'),
         flashMessageObj = require('../messages'),
 	  	User 			= require('../models/user'),
-	    Notification 	= require('../models/notification');
+	    Notification 	= require('../models/notification'),
+		TOOLS			= 	require('../tools'),
+		tools			= 	new TOOLS();
 
 //========================================
 //Index comment route
@@ -60,23 +62,9 @@ router.post('/', middlewareObj.isLoggedIn, (req, res) => {
 					newComment.save();
 					foundCampground.comments.push(newComment);
 					foundCampground.save();
-					try{
-						let user = await User.findById(req.user._id).populate('followers').exec();
-						let newNotification = {
-							user: req.user._id,
-							comment: newComment._id
-						};
-						let notification = await Notification.create(newNotification);
-						for(const follower of user.followers){
-							follower.notifications.push(notification);
-							await follower.save();
-						}
-						req.flash('success','Created new comment');
-						res.redirect('/campgrounds/' + req.params.id);
-					}catch(err){
-						flashMessageObj.errorCampgroundMessage(req, res, err.message);
-					}
-					
+					tools.addNotification({user:req.user._id, comment: newComment._id});
+					req.flash('success','Created new comment');
+					res.redirect('/campgrounds/' + req.params.id);			
 				}
 			});
 		}

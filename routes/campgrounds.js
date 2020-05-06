@@ -130,29 +130,9 @@ router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 						flashMessageObj.errorCampgroundMessage(req, res, 'Could not create campground try if persists try again later');
 					}
 					else {
-						try{
-							let user = await User.findById(req.user._id).populate('followers').exec();
-							let newNotification = {
-								user: req.user._id,
-								campground: newCampground._id
-							}
-							//====================================================================
-							//New code added for notifications go through user followers and push 
-							//notification to let them campground was creater
-							//====================================================================
-							let notification = await Notification.create(newNotification);
-							for(const follower of user.followers) {
-								
-								follower.notifications.push(notification);
-								follower.save();
-							}
-							//redirect back to campgrounds page
-							req.flash('success', 'Added new campground');
-							res.redirect(`/campgrounds/${newCampground._id}`);
-						} catch(err) {
-							flashMessageObj.errorCampgroundMessage(req, res, err.message);
-						}
-						
+						tools.addNotification({user:req.user._id, campground: newCampground._id});
+						req.flash('success', 'Added new campground');
+						res.redirect(`/campgrounds/${newCampground._id}`);
 					}
 				});
 			});
