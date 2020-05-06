@@ -46,7 +46,25 @@
 						Posted: <%= moment(campground.createdAt).fromNow()%>
 							
 					</p>
-					<div class='mb-2'>
+					<div class='float-right'>
+
+						<% if(currentUser && (currentUser.isAdmin||campground.author._id.equals(currentUser._id))){ %>
+							<a class='btn btn-sm btn-warning' href='/campgrounds/<%= campground._id%>/edit'>Edit</a>
+							
+							<% } %>
+						<% if(currentUser && !(campground.author._id.equals(currentUser._id))){ %>
+							<% if(!isFollower){ %>
+								<a class='btn btn-sm btn-success' href='/follow/<%= campground.author._id %>'>
+									Follow
+								</a>
+							<% } else{ %>
+								<a class='btn btn-sm btn-danger' href='/unfollow/<%= campground.author._id %>'>
+									Unfollow
+								</a>
+							<% } %>
+						<% } %>
+					</div>
+					<div>
 						<form action="/campgrounds/<%= campground._id %>/like" method="POST">
 							<div class="btn-group">
 								<% if (currentUser && campground.likes.some(function (like) {
@@ -66,38 +84,34 @@
 							</div>
 						</form>
 					</div>
-					<div>
-
-						<% if(currentUser && (currentUser.isAdmin||campground.author._id.equals(currentUser._id))){ %>
-							<a class='btn btn-sm btn-warning' href='/campgrounds/<%= campground._id%>/edit'>Edit</a>
-							
-							<% } %>
-						<% if(currentUser && !(campground.author._id.equals(currentUser._id))){ %>
-							<% if(!isFollower){ %>
-								<a class='btn btn-sm btn-success' href='/follow/<%= campground.author._id %>'>
-									Follow
-								</a>
-							<% } else{ %>
-								<a class='btn btn-sm btn-danger' href='/unfollow/<%= campground.author._id %>'>
-									Unfollow
-								</a>
-							<% } %>
-						<% } %>
-						
-
-						
-						<div class='<%= currentUser ? "d-inline float-right" : "text-right" %>'>
-							<a class='btn btn-sm btn-success' href='/campgrounds/<%= campground._id%>/comments/new'>
-								Leave a Comment
-							</a>
-						</div>
+					
+				</div>
+			</div>
+			<div class='card mt-1'>
+				<div class='card-body'>
+					<div class='card-title'>
+						<h3>
+							Latest Comments:
+						</h3>
 					</div>
-
-						<hr class='my-3'>
+					<div class='card-subtitle'>
+						
+						<div class='float-right'>
+								<a class='btn btn-sm btn-success' href='/campgrounds/<%= campground._id%>/comments/new'>
+									Leave a Comment
+								</a>
+							<a href="/campgrounds/<%= campground._id %>/comments"><i class="fa fa-search" aria-hidden="true"></i> See all comments</a>
+							
+						</div>
+						<h5>
+							Total comments: <%= campground.comments.length %>
+						</h5>
+					</div>
+					<hr class='my-3'>
 					<ul class="list-unstyled">
-						<% let t = 1; campground.comments.forEach(comment=>{%>
-						  <li class="media border <%= (t%2!==0)?'alt-bg':''%>">
-							  <%t++;%>
+						<% let s = 1; campground.comments.slice(0, 5).forEach(function(comment){ %>
+						<li class="media border <%= (s%2!==0)?'alt-bg':''%>">
+							  <% s++ %>
 							<div class='col-3'>
 								<img src="<%= comment.author.avatar %>" class= "mr-3 img-fluid img-thumbnail" alt="<%= comment.author.username %>'s avatar ">  
 							</div>
@@ -122,24 +136,18 @@
 
 								<div>
 								<% if(currentUser && (currentUser.isAdmin || comment.author._id.equals(currentUser._id))){ %>
-									<a class='btn btn-sm btn-warning' href='/campgrounds/<%= campground._id%>/comments/<%=comment._id%>/edit'>
+									<a class='btn btn-sm btn-warning float-right' href='/campgrounds/<%= campground._id%>/comments/<%=comment._id%>/edit'>
 										Edit
 									</a>
-									<form action='/campgrounds/<%=campground._id%>/comments/<%=comment._id%>?_method=DELETE' method='POST'>
-										<button class='btn btn-sm btn-danger'>Delete</button>
-									</form>
-									<% } %>
+								<% } %>
 								</div>
 							</div>
-							  
-						  </li>
-					  	<% }); %>
+						</li>
+						<% }); %>
 					</ul>
-					
+					<a href='/campgrounds'>Go back</a>
 				</div>
-				
 			</div>
-				
 			<div class='card mt-1'>
 				<div class='card-body'>
 					<div class='card-title'>
@@ -172,7 +180,7 @@
 					</div>
 					<hr class='my-3'>
 					<ul class="list-unstyled">
-						<% let s = 1; campground.reviews.slice(0, 5).forEach(function(review){ %>
+						<% s = 1; campground.reviews.slice(0, 5).forEach(function(review){ %>
 						<li class="media border <%= (s%2!==0)?'alt-bg':''%>">
 							<%s++;%>
 							<div class="media-body col-3">

@@ -136,10 +136,10 @@ router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 								user: req.user._id,
 								campground: newCampground._id
 							}
-//====================================================================
-//New code added for notifications go through user followers and push 
-//notification to let them campground was creater
-//====================================================================
+							//====================================================================
+							//New code added for notifications go through user followers and push 
+							//notification to let them campground was creater
+							//====================================================================
 							let notification = await Notification.create(newNotification);
 							for(const follower of user.followers) {
 								
@@ -175,7 +175,7 @@ router.get('/:id', (req, res) => {
 	//render show template with that campground
 	Campground.findById(req.params.id).populate('author likes')
 		.populate({path: 'reviews', options:{sort:{createdAt: -1}}, populate:{path: 'author', select: 'username'}})
-		.populate({path: 'comments', populate:{path: 'author'}})
+		.populate({path: 'comments', options:{sort:{createdAt: -1}},populate:{path: 'author'}})
 		.exec(async (err, foundCampground) => {
 		if (err || !foundCampground) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing campground try again later if problem persists');
