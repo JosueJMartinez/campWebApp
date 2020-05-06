@@ -65,7 +65,6 @@ middlewareObj.isLoggedIn = (req, res, next) => {
 
 middlewareObj.checkReviewExistence = async (req, res, next) =>{
 	try{
-		eval(require('locus'));
 		if(req.isAuthenticated()){
 			let campground = await Campground.findById(req.params.id).populate('reviews').exec();
 			if(!campground){
@@ -97,9 +96,7 @@ middlewareObj.checkReviewOwnership = async (req, res, next) =>{
 			if (!(review.author.equals(req.user._id)||req.user.isAdmin)) {
 				return flashMessageObj.errorCampgroundMessage(req, res, 'Access denied');
 			}
-			
 			next();
-		      
     	}
     	else {
 			return flashMessageObj.errorCampgroundMessage(req, res, 'Please login first', '/login');

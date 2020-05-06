@@ -63,7 +63,6 @@ router.post('/', middlewareObj.isLoggedIn, middlewareObj.checkReviewExistence, a
 			follower.notifications.push(notification);
 			await follower.save();
 		}
-		eval(require('locus'));
 		req.flash('success', 'Review has been successfully added');
 		res.redirect('/campgrounds/'+campground._id);
 	}catch(err){
