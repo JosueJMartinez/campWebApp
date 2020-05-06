@@ -8,7 +8,20 @@ const   express     	= require('express'),
 	    Notification 	= require('../models/notification');
 
 //========================================
-//Comments routes
+//Index comment route
+//=========================================
+router.get('/', async (req, res)=>{
+	try{
+		let campground = await Campground.findById(req.params.id).populate({
+			path:'comments',
+			options:{sort:{createdAt:-1}},
+			populate:{path:'author', select:'username avatar'}
+		}).exec();
+		res.render('comments/index',{campground});
+	}catch(err){
+		flashMessageObj.errorCampgroundMessage(req, res, err.message);
+	}
+});
 //=========================================
 //NEW route for comments
 //=========================================

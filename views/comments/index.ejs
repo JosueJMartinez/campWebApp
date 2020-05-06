@@ -1,0 +1,64 @@
+<% include ../partials/header %>
+	
+	<div class='card mt-1'>
+		<div class='card-body'>
+			<div class='card-title'>
+				<h5 class='card-title display-4'>
+					Comments for <%=campground.title %>
+				</h5>
+			</div>
+			<div class='card-subtitle'>
+
+				<div class='float-right'>
+						<a class='btn btn-sm btn-success' href='/campgrounds/<%= campground._id%>/comments/new'>
+							Leave a Comment
+						</a>
+					<a href="/campgrounds/<%= campground._id %>/comments"><i class="fa fa-search" aria-hidden="true"></i> See all comments</a>
+
+				</div>
+				<h5>
+					Total comments: <%= campground.comments.length %>
+				</h5>
+			</div>
+			<hr class='my-3'>
+			<ul class="list-unstyled">
+				<% let s = 1; campground.comments.forEach(function(comment){ %>
+				<li class="media border <%= (s%2!==0)?'alt-bg':''%>">
+					  <% s++ %>
+					<div class='col-3'>
+						<img src="<%= comment.author.avatar %>" class= "mr-3 img-fluid img-thumbnail" alt="<%= comment.author.username %>'s avatar ">  
+					</div>
+					<div class="media-body col-9">
+					  <p class="mt-0 mb-1">
+						  <span class='h5'>
+							  <% if(currentUser && (currentUser._id.equals(comment.author._id))){ %>
+									<a class='new-link' href='/userprofile'>
+								<% } else { %>
+									<a class='new-link' href='/profiles/<%=comment.author._id%>'>
+								<% } %>
+									<%=comment.author.username%>
+									</a>
+							</span>
+							<span class='float-right'>
+								<%= moment(comment.createdAt).fromNow()%>
+							</span>				
+						</p>
+						<p>
+							<%=comment.text%>	
+						</p>	  
+
+						<div>
+						<% if(currentUser && (currentUser.isAdmin || comment.author._id.equals(currentUser._id))){ %>
+							<a class='btn btn-sm btn-warning float-right' href='/campgrounds/<%= campground._id%>/comments/<%=comment._id%>/edit'>
+								Edit
+							</a>
+						<% } %>
+						</div>
+					</div>
+				</li>
+				<% }); %>
+			</ul>
+		</div>
+	</div>
+	
+<%include ../partials/footer%>
