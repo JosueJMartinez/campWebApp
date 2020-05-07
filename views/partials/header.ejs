@@ -47,11 +47,11 @@
 							<% } %>
 							<% notifications.forEach(notification => { %>
 								<% if(notification.campground){ %>
-									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new campground!</a>
+									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new campground called: <%= notification.campground.title %>!</a>
 								<% } else if(notification.comment){ %>
-									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new comment!</a>
+									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new comment in <%= notification.comment.campground.title%>!</a>
 								<% } else{%>
-									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new review!</a>
+									<a class="dropdown-item" href="/notifications/<%= notification._id %>"><%= notification.user.username %> has a new review in <%= notification.review.campground.title%>!</a>
 								<% } %>
 							<% }); %>
 						</div>

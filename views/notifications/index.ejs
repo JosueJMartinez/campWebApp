@@ -10,11 +10,11 @@
 				<% if(allNotifications.length > 0){ %>
 					<% allNotifications.forEach(notification => { %>
 						<% if(notification.campground){ %>
-							<a href="/notifications/<%= notification._id%>" class="list-group-item list-group-item-action alt-bg-color"><%=notification.user.username %> has a new campground!</a>
+							<a href="/notifications/<%= notification._id%>" class="list-group-item list-group-item-action alt-bg-color"><%=notification.user.username %> has a new campground called <%= notification.campground.title %>!</a>
 						<% } else if(notification.comment){ %>
-							<a href="/notifications/<%= notification._id%>" class="list-group-item list-group-item-action alt-bg-color"><%=notification.user.username %> has a new comment!</a>
+							<a href="/notifications/<%= notification._id%>" class="list-group-item list-group-item-action alt-bg-color"><%=notification.user.username %> has a new comment in <%= notification.comment.campground.title %>!</a>
 						<% } else{ %>
-							<a href="/notifications/<%= notification._id%>" class="list-group-item list-group-item-action alt-bg-color"><%=notification.user.username %> has a new review!</a>
+							<a href="/notifications/<%= notification._id%>" class="list-group-item list-group-item-action alt-bg-color"><%=notification.user.username %> has a new review in <%= notification.review.campground.title %> !</a>
 						<% } %>
 					<%});%>
 				<% } else{%>

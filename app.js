@@ -1,5 +1,7 @@
 /*
 	Things to do:
+	*	Work on notifications to remove them if comments, campgrounds, and reviews are deleted
+	*	Modify notification messages probably
 	*	Need to fix bug where token does not expire to verify new user
 	*	Need to do error checking for sign up with correct email address and username
 	*	Fix passport error messages
@@ -92,12 +94,13 @@ app.use(async (req, res, next) => {
 	res.locals.currentUser = req.user;
 	if(req.user){
 		try{
-			let user = await User.findById(req.user._id).populate({path:'notifications', populate:{path:'user'}, match:{isRead: false}}).exec();
+			let user = await User.findById(req.user._id).populate({path:'notifications',populate:{path:'user campground comment review',populate:{path:'campground', select:'title'}, select:'username title'}, match:{isRead: false}}).exec();
 			res.locals.notifications = user.notifications.reverse();
 		}catch(err){
 			console.log(err.message);
 		}
 	}
+	
 	res.locals.error = req.flash('error');
 	res.locals.success = req.flash('success');
 	next();

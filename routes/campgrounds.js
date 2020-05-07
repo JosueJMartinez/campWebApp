@@ -154,7 +154,8 @@ router.get('/:id', (req, res) => {
 	//find campground with provided ID
 	//render show template with that campground
 	Campground.findById(req.params.id).populate('author likes')
-		.populate({path: 'reviews', options:{sort:{createdAt: -1}}, populate:{path: 'author', select: 'username'}})
+		.populate({path: 'reviews', options:{sort:{createdAt: -1}}, 
+				   populate:{path: 'author', select: 'username'}})
 		.populate({path: 'comments', options:{sort:{createdAt: -1}},populate:{path: 'author'}})
 		.exec(async (err, foundCampground) => {
 		if (err || !foundCampground) {

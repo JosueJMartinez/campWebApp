@@ -462,13 +462,18 @@ router.get('/unfollow/:id', middlewareObj.isLoggedIn, async (req, res)=>{
 //========================================================================
 router.get('/notifications', middlewareObj.isLoggedIn, async function(req, res) {
 	try {
-		let user = await User.findById(req.user._id)
-			.populate({
-				path: 'notifications',
-				populate:{path:'user'},
-				options: { sort: { _id: -1 } }
-			})
-			.exec();
+		let user = await User.findById(req.user._id).populate({
+			path:'notifications',
+			populate:{
+				path:'user campground comment review',
+				populate:{
+					path:'campground', 
+					select:'title'}, 
+				select:'username title'},  
+			options:{sort:{_id: -1}
+					}
+		}).exec();
+		eval(require('locus'));
 		let allNotifications = user.notifications;
 		res.render('notifications/index', { allNotifications });
 	} catch (err) {

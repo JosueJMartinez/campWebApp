@@ -31,7 +31,8 @@ Tools.prototype.calcAvg = (reviews) => {
 	});
 	return sum/reviews.length;
 }
-
+// main function to add notifications for users ex: 
+// addNotification({user: user._id, campground||comment||review: obj._id})
 Tools.prototype.addNotification = async (obj)=> {
 	try{
 		let user = await User.findById(obj.user).populate('followers').exec();
