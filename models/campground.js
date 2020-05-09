@@ -37,7 +37,8 @@ const campGndSchema = new mongoose.Schema({
     rating: {
         type: Number,
         default: 0
-    }
+    },
+	simple: String
 });
 
 campGndSchema.pre('remove', async function(){

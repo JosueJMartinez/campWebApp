@@ -122,7 +122,8 @@ router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 					lng: data[0].longitude,
 					location: data[0].formattedAddress,
 					img: result.secure_url,
-					img_id: result.public_id
+					img_id: result.public_id,
+					simple: req.body.campground.simple
 				};
 				
 				Campground.create(campground, async (err, newCampground) => {

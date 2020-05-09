@@ -23,6 +23,10 @@
 					<label for="location">Location</label>
 					<input class="form-control" type="text" name="campground[location]" id="location" value="<%= campground.location %>">
 				</div>
+				<div class="form-group">
+					<label for="simple">Simple Overview</label>
+					<input class="form-control" type="text" name="campground[simple]" id="simple" value="<%= campground.simple %>" maxlength="100">
+				</div>
 				<div class='form-group'>
 					<label for="description">Description</label>
 					<textarea id="description" rows='5' class='form-control' name='campground[description]'><%=campground.description%></textarea>
