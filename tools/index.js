@@ -47,13 +47,18 @@ Tools.prototype.addNotification = async (obj)=> {
 			newNotification.review = obj.review
 		}
 
-		let notification = await Notification.create(newNotification);
+		// eval(require('locus'));
 		for(const follower of user.followers){
+			let notification = await Notification.create(newNotification);
+			// eval(require('locus'));
 			follower.notifications.push(notification);
+			// eval(require('locus'));
 			await follower.save();
+			// eval(require('locus'));
 		}
+		// eval(require('locus'));
 	}catch(err){
-		flashMessageObj.errorCampgroundMessage(req, res, err.message);
+		throw err;
 	}
 }
 module.exports = Tools;

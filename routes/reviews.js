@@ -109,7 +109,7 @@ router.delete('/:review_id', middlewareObj.checkReviewOwnership, async(req, res)
 		if(!review){
 			return flashMessageObj.errorCampgroundMessage(req, res, 'Message is missing');
 		}
-		review.remove();
+		await review.remove();
 		req.flash('success', 'Deleted Review');
 		res.redirect(`/campgrounds/${req.params.id}`);
 	}catch(err){

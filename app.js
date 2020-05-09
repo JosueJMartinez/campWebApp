@@ -95,6 +95,7 @@ app.use(async (req, res, next) => {
 	if(req.user){
 		try{
 			let user = await User.findById(req.user._id).populate({path:'notifications',populate:{path:'user campground comment review',populate:{path:'campground', select:'title'}, select:'username title'}, match:{isRead: false}}).exec();
+			
 			res.locals.notifications = user.notifications.reverse();
 		}catch(err){
 			console.log(err.message);

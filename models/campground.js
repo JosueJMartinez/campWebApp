@@ -1,6 +1,8 @@
 const 	mongoose = require('mongoose'),
 		Comment = require('./comment'),
-		Review = require('./review');
+		Review = require('./review'),
+	  	User = require('./user'),
+	  	Notification = require('./notification');
 
 //Schema setup
 const campGndSchema = new mongoose.Schema({
@@ -30,7 +32,7 @@ const campGndSchema = new mongoose.Schema({
 	}],
 	reviews: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Review"
+            ref: 'Review'
     }],
     rating: {
         type: Number,
@@ -40,18 +42,67 @@ const campGndSchema = new mongoose.Schema({
 
 campGndSchema.pre('remove', async function(){
 	try{
+		let cNote = await Notification.find({
+			comment:{
+				$in:this.comments
+			}
+		}).select('id').exec();
+		
+		let rNote = await Notification.find({
+			review:{
+				$in:this.reviews
+			}
+		}).select('id').exec();
+		
+		let campNote = await Notification.find({
+			campground: this._id
+		}).select('id').exec();
+		
+		let notifications = [...cNote, ...rNote, ...campNote];
+		let newNotes = notifications.map(note => note._id+"");
+		
+		let users = await User.find({notifications:{$in:newNotes}});
+		for(const user of users){
+			
+			user.notifications = user.notifications.filter(note=>{
+				return !newNotes.includes(note.toString());
+			});
+			
+			await user.save();
+		};
+		
+		await Notification.remove({
+			comment:{
+				$in:this.comments
+			}
+		});
+		
 		await Comment.remove({
     		_id: {
     			$in: this.comments
     		}
     	});
+		
+		await Notification.remove({
+			review:{
+				$in:this.reviews
+			}
+		});
+		
 		await Review.remove({
 			_id:{
 				$in: this.reviews
 			}
 		});
+		
+		await Notification.remove({
+			campground:{
+				$in:this._id
+			}
+		});
+		
 	}catch(err){
-    	throw new Error('remove failed');
+    	throw err;
     }
 });
 

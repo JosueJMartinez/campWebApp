@@ -473,7 +473,7 @@ router.get('/notifications', middlewareObj.isLoggedIn, async function(req, res) 
 			options:{sort:{_id: -1}
 					}
 		}).exec();
-		eval(require('locus'));
+		
 		let allNotifications = user.notifications;
 		res.render('notifications/index', { allNotifications });
 	} catch (err) {
@@ -489,6 +489,7 @@ router.get('/notifications/:id', middlewareObj.isLoggedIn, async function(req, r
 		let campground = await Campgrounds.findById(notification.campground);
 		notification.isRead = true;
 		notification.save();
+
 		if(campground){
 			return res.redirect(`/campgrounds/${notification.campground}`);	
 		}
