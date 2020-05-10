@@ -37,21 +37,10 @@ const reviewSchema = new mongoose.Schema({
 
 reviewSchema.pre('remove', async function(){
 	try{
-		let notes_ids = await Notification.find({
-			review:this._id
-		}).select('id').exec();
-		
-		let users = await User.find({notifications:{$in:notes_ids}});
+		let notes_ids = await tools.findNotifications(this._id, 'review');
 		notes_ids = notes_ids.map(note => note._id+"");
 		
-		for(const user of users){
-			
-			user.notifications = user.notifications.filter(note =>{
-				return !notes_ids.includes(note.toString());
-			});
-
-			await user.save();
-		};
+		await tools.pullUsersNotifications(notes_ids);
 		
 		await Notification.remove({
 			review:this._id

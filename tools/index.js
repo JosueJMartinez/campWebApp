@@ -61,4 +61,36 @@ Tools.prototype.addNotification = async (obj)=> {
 		throw err;
 	}
 }
+
+//passes in an object field array and type, and returns a list of notifications ids 
+//that are that type;
+Tools.prototype.findNotifications = async (list, type) =>{
+	try{
+		let notes =  await Notification.find({
+			[type]:{
+				$in:list
+			}
+		}).select('_id').exec();
+		return notes;
+	}catch(err){
+		throw err;
+	}
+}
+
+Tools.prototype.pullUsersNotifications = async(notes) =>{
+	try{
+		let users = await User.find({notifications:{$in:notes}});
+		for(const user of users){
+
+			user.notifications = user.notifications.filter(note=>{
+				return !notes.includes(note.toString());
+			});
+
+			await user.save();
+		};
+	}catch(err){
+		throw err;
+	}
+}
+
 module.exports = Tools;

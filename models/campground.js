@@ -2,7 +2,9 @@ const 	mongoose = require('mongoose'),
 		Comment = require('./comment'),
 		Review = require('./review'),
 	  	User = require('./user'),
-	  	Notification = require('./notification');
+	  	Notification = require('./notification'),
+	  	TOOLS = require('../tools'),
+	  	tools = new TOOLS();
 
 //Schema setup
 const campGndSchema = new mongoose.Schema({
@@ -43,34 +45,14 @@ const campGndSchema = new mongoose.Schema({
 
 campGndSchema.pre('remove', async function(){
 	try{
-		let cNote = await Notification.find({
-			comment:{
-				$in:this.comments
-			}
-		}).select('id').exec();
 		
-		let rNote = await Notification.find({
-			review:{
-				$in:this.reviews
-			}
-		}).select('id').exec();
+		let cNote = await tools.findNotifications(this.comments, 'comment');
+		let rNote = await tools.findNotifications(this.reviews, 'review');
+		let campNote = await tools.findNotifications(this._id, 'campground');
 		
-		let campNote = await Notification.find({
-			campground: this._id
-		}).select('id').exec();
+		let newNotes = [...cNote, ...rNote, ...campNote].map(note=> note._id+'');
 		
-		let notifications = [...cNote, ...rNote, ...campNote];
-		let newNotes = notifications.map(note => note._id+"");
-		
-		let users = await User.find({notifications:{$in:newNotes}});
-		for(const user of users){
-			
-			user.notifications = user.notifications.filter(note=>{
-				return !newNotes.includes(note.toString());
-			});
-			
-			await user.save();
-		};
+		await tools.pullUsersNotifications(newNotes);
 		
 		await Notification.remove({
 			comment:{

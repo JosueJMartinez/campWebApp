@@ -1,6 +1,8 @@
-const 	mongoose = require('mongoose'),
-	  	User = require('./user'),
-		Notification = require('./notification');
+const 	mongoose		= require('mongoose'),
+	  	TOOLS 			= require('../tools'),
+		tools 			= new TOOLS(),
+	  	User 			= require('./user'),
+		Notification 	= require('./notification');
 
 //Schema setup
 const commentSchema = new mongoose.Schema({
@@ -21,20 +23,10 @@ const commentSchema = new mongoose.Schema({
 });
 commentSchema.pre('remove', async function(){
 	try{
-		let notes_ids = await Notification.find({
-			comment:this._id
-		}).select('id').exec();
-		
-		let users = await User.find({notifications:{$in:notes_ids}});
+		let notes_ids = await tools.findNotifications(this._id, 'comment');
 		notes_ids = notes_ids.map(note => note._id+"");
-		for(const user of users){
-			
-			user.notifications = user.notifications.filter(note =>{
-				return !notes_ids.includes(note.toString());
-			});
-
-			await user.save();
-		};
+		
+		await tools.pullUsersNotifications(notes_ids);
 		
 		await Notification.remove({
 			comment:this._id

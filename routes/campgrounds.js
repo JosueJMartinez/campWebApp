@@ -259,7 +259,7 @@ router.delete('/:id', middlewareObj.checkOwnership, (req, res) => {
 //============================================================
 router.post('/:id/like', middlewareObj.isLoggedIn, async (req, res)=>{
 	try{
-		console.log('test');
+		
 		let campground = await Campground.findById(req.params.id);
 		let foundUserLike = campground.likes.some(like =>{
 			return like.equals(req.user._id);
