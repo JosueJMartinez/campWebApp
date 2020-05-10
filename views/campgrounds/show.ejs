@@ -189,7 +189,7 @@
 									Review by: <strong><a class='new-link' href="<%=(currentUser && (currentUser._id.equals(review.author._id))) ?'/userprofile' : '/profiles/'+review.author._id%>"><%= review.author.username%></a></strong>
 								</div>
 								<div>
-									<%= moment(campground.updatedAt).fromNow()%>
+									<%= moment(review.updatedAt).fromNow()%>
 								</div>
 							</div>
 							<div class='col-9'>

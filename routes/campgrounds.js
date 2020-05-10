@@ -159,6 +159,7 @@ router.get('/:id', (req, res) => {
 				   populate:{path: 'author', select: 'username'}})
 		.populate({path: 'comments', options:{sort:{createdAt: -1}},populate:{path: 'author'}})
 		.exec(async (err, foundCampground) => {
+		
 		if (err || !foundCampground) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing campground try again later if problem persists');
 		}
@@ -173,7 +174,6 @@ router.get('/:id', (req, res) => {
 				}
 			}
 			
-			console.log(foundCampground.author.followers, isFollower);
 			res.render('campgrounds/show', { campground: foundCampground, page:'show', isFollower });
 		}
 	});
