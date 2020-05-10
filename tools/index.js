@@ -62,7 +62,7 @@ Tools.prototype.addNotification = async (obj)=> {
 	}
 }
 
-//passes in an object field array and type, and returns a list of notifications ids 
+//passes in an object id field array and type, and returns a list of notifications ids 
 //that are that type;
 Tools.prototype.findNotifications = async (list, type) =>{
 	try{

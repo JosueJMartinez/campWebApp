@@ -25,7 +25,27 @@ router.get('/:id', middlewareObj.isLoggedIn, async (req, res)=>{
 // working on removing a follower
 router.get('/:id/unfollow', middlewareObj.isLoggedIn, async (req, res)=>{
 	try{
-		let user = await User.findById(req.params.id);
+		//need to find current user notifications
+		let follower = await User.findById(req.user.id,{notifications:1}).populate('notifications');
+		//find unfollowed user notifications
+		//take out all unfollowed user notifications
+		let array = [];
+		let note;
+		for(let i = 0; i < follower.notifications.length; i++){
+			if(req.params.id == (follower.notifications[i].user+'')){
+				note = follower.notifications.splice(i--,1);
+				array.push(note[0]._id);
+			}
+		}
+		await follower.save();
+		
+		//delete all notifications from current user that are the unfollowe
+		await Notification.remove({
+			_id:{
+				$in:array
+			}
+		});
+		
 		await User.findByIdAndUpdate( req.params.id, { $pull: {followers: req.user.id } } );
 		res.redirect('back');
 	}catch(err){
