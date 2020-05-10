@@ -422,7 +422,6 @@ router.get('/profiles/:id', (req, res) => {
 									break;
 								}
 							}
-							console.log(user, isFollower);
 						}
 						res.render('profiles', {user: user, campgrounds: campgrounds, haveCamps: haveCamps, page:'profiles', haveComments, comments, isFollower});
 					});
@@ -430,82 +429,6 @@ router.get('/profiles/:id', (req, res) => {
 			});
 		}
 	});
-});
-//========================================================================
-//follow user route path	
-//========================================================================
-router.get('/follow/:id', middlewareObj.isLoggedIn, async (req, res)=>{
-	try{
-		let user = await User.findById(req.params.id);
-		user.followers.push(req.user._id);
-		user.save();
-		req.flash('success', 'Successfully followed '+ user.username+ '!');
-		res.redirect('back');
-	}catch(err){
-		flashMessageObj.errorCampgroundMessage(req, res, err.message);
-	}
-});
-// working on removing a follower
-router.get('/unfollow/:id', middlewareObj.isLoggedIn, async (req, res)=>{
-	try{
-		let user = await User.findById(req.params.id);
-		await User.findByIdAndUpdate( req.params.id, { $pull: {followers: req.user.id } } );
-		res.redirect('back');
-	}catch(err){
-		flashMessageObj.errorCampgroundMessage(req, res, err.message);
-	}
-
-});
-
-//========================================================================
-//Notifications page for user and path to get there.
-//========================================================================
-router.get('/notifications', middlewareObj.isLoggedIn, async function(req, res) {
-	try {
-		let user = await User.findById(req.user._id).populate({
-			path:'notifications',
-			populate:{
-				path:'user campground comment review',
-				populate:{
-					path:'campground', 
-					select:'title'}, 
-				select:'username title'},  
-			options:{sort:{_id: -1}
-					}
-		}).exec();
-		
-		let allNotifications = user.notifications;
-		res.render('notifications/index', { allNotifications });
-	} catch (err) {
-		flashMessageObj.errorCampgroundMessage(req, res, err.message);
-	}
-});
-//============================================================================
-// handle notification
-//============================================================================
-router.get('/notifications/:id', middlewareObj.isLoggedIn, async function(req, res) {
-	try {
-		let notification = await Notification.findById(req.params.id);
-		let campground = await Campgrounds.findById(notification.campground);
-		notification.isRead = true;
-		notification.save();
-
-		if(campground){
-			return res.redirect(`/campgrounds/${notification.campground}`);	
-		}
-		let comment = await Comments.findById(notification.comment).populate('campground').exec();
-		if(comment){
-			return res.redirect(`/campgrounds/${comment.campground._id}`);	
-		}
-		let review = await 	Review.findById(notification.review).populate('campground').exec();
-		if(review){
-			return res.redirect(`/campgrounds/${review.campground._id}`);
-		}
-		flashMessageObj.errorCampgroundMessage(req, res, 'Cannot not find notification');
-		
-	} catch (err) {
-		flashMessageObj.errorCampgroundMessage(req, res, err.message);
-	}
 });
 
 //============================================================================

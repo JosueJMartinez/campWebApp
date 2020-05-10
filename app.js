@@ -30,6 +30,8 @@ const 	commentRoutes 		= require('./routes/comments'),
 		authRoutes 			= require('./routes/auth'),
 		campRoutes 			= require('./routes/campgrounds'),
 		reviewRoutes		= require('./routes/reviews'),
+		followRoutes		= require('./routes/follows'),
+		notificationRoutes	= require('./routes/notifications'),
 		middlewareObj 		= require('./middleware'),
 		flashMessageObj 	= require('./messages');
 
@@ -98,7 +100,7 @@ app.use(async (req, res, next) => {
 			
 			res.locals.notifications = user.notifications.reverse();
 		}catch(err){
-			console.log(err.message);
+			flashMessageObj.errorCampgroundMessage(req, res, err.message);
 		}
 	}
 	
@@ -132,6 +134,8 @@ app.use('/campgrounds', campRoutes);
 app.use('/campgrounds/:id/comments', commentRoutes);
 app.use('/', authRoutes);
 app.use('/campgrounds/:id/reviews', reviewRoutes);
+app.use('/follow', followRoutes);
+app.use('/notifications', notificationRoutes);
 
 
 

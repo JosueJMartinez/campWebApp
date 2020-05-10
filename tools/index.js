@@ -76,7 +76,8 @@ Tools.prototype.findNotifications = async (list, type) =>{
 		throw err;
 	}
 }
-
+//sends in an array of notifications, finds users being notified and 
+//pulls out the notifications from the user notifications field array
 Tools.prototype.pullUsersNotifications = async(notes) =>{
 	try{
 		let users = await User.find({notifications:{$in:notes}});
