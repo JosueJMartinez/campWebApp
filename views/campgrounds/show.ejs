@@ -70,11 +70,11 @@
 								<% if (currentUser && campground.likes.some(function (like) {
 									return like.equals(currentUser._id)
 								})) { %>
-									<button class="btn btn-sm btn-primary">
+									<button class="btn btn-sm btn-primary" data-backdrop="static" data-toggle="modal" data-target="#disableLike">
 										<i class="fas fa-thumbs-up"></i> Liked (<%= campground.likes.length %>)
 									</button>
 								<% } else { %>
-									<button class="btn btn-sm btn-secondary">
+									<button class="btn btn-sm btn-secondary" data-backdrop="static" data-toggle="modal" data-target="#disableLike">
 										<i class="fas fa-thumbs-up"></i> Like (<%= campground.likes.length %>)
 									</button>
 								<% } %>
@@ -243,6 +243,22 @@
 			</div>
 		</div>
 	</div>
+	<div id="disableLike" class="modal fade" role="dialog" tabindex="-1">
+		<div class="modal-dialog text-center" role='document'>
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header mx-auto">
+					<h4 class="modal-title">Liking post</h4>
+				</div>
+				<div class="modal-body">
+					<div class="spinner-border" role="status">
+  						<span class="sr-only">Loading...</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 
 	<script src='/scripts/show.js'></script>
 	<script>

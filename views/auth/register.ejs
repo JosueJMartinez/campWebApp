@@ -39,7 +39,7 @@
 					<input id='admin' class='form-control' type='text' name='adminCode' placeholder='Please enter code'>
 				</div>
 				<div class='form-group'>
-					<button class='btn btn-lg btn-primary btn-block'>
+					<button class='btn btn-lg btn-primary btn-block' data-backdrop="static" data-toggle="modal" data-target="#disableSubmit">
 						Submit!
 					</button>
 				</div>
@@ -50,5 +50,5 @@
 
 
 	</div>
-
+<%include ../partials/submitModal%>
 <%include ../partials/footer%>

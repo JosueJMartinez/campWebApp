@@ -2,36 +2,37 @@
 	<div class='row justify-content-center'>
 		<div class='col-12 mt-4 text-center'>
 			<h2>
-				Please Log in
+				
+				Hello <%= data.username %>, please verify email
 			</h2>
 		</div>
 		<div class='col-7'>
-			<form action='/login' method='POST'>
+			<form action='/resend' method='POST'>
 				<div class='form-group'>
-					<label for='username'>Username</label>
-					<input id= 'username' class='form-control' type='text' name='username' placeholder='Username'>
+					<label for='email'> If <%= data.email%> not correct re-enter new one</label>
+					<input id= 'email' class='form-control' type='email' name='email' placeholder='Enter new Email'>
 				</div>
 				<div class='form-group'>
-					<label for='password'>Password</label>
-					<input id='password' class='form-control' type='password' name='password' placeholder='Password'>
+					<input id= 'id' class='form-control' type='tex' name='user_id' value='<%= data.userId %>' required hidden>
 				</div>
 				<div class='form-group'>
 					<button class='btn btn-lg btn-primary btn-block' data-backdrop="static" data-toggle="modal" data-target="#disable">
-						Login!
+						Re-verify
 					</button>
 				</div>
 
 			</form>
-			<a href='/campgrounds'>Go back</a>	
-			<a class='float-right' href='/forgot'>Forgot Password</a>	
+			<a href='/campgrounds'>Go back</a>
 		</div>
+
+
 	</div>
 	<div id="disable" class="modal fade" role="dialog" tabindex="-1">
 		<div class="modal-dialog text-center" role='document'>
 			<!-- Modal content-->
 			<div class="modal-content">
 				<div class="modal-header mx-auto">
-					<h4 class="modal-title">Logging In</h4>
+					<h4 class="modal-title">Sending email to verify again</h4>
 				</div>
 				<div class="modal-body">
 					<div class="spinner-border" role="status">
@@ -41,4 +42,6 @@
 			</div>
 		</div>
 	</div>
+
+
 <%include ../partials/footer%>

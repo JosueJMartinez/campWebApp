@@ -16,7 +16,7 @@
 					<input id='confirm' class='form-control' type='password' name='confirm' placeholder='Password'>
 				</div>
 				<div class='form-group'>
-					<button class='btn btn-lg btn-primary btn-block'>
+					<button class='btn btn-lg btn-primary btn-block' data-backdrop="static" data-toggle="modal" data-target="#disable">
 						Reset Password
 					</button>
 				</div>
@@ -24,8 +24,20 @@
 			</form>
 			<a href='/campgrounds'>Go back</a>
 		</div>
-
-
 	</div>
-
+	<div id="disable" class="modal fade" role="dialog" tabindex="-1">
+		<div class="modal-dialog text-center" role='document'>
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header mx-auto">
+					<h4 class="modal-title">Resetting Password</h4>
+				</div>
+				<div class="modal-body">
+					<div class="spinner-border" role="status">
+  						<span class="sr-only">Loading...</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 <%include ../partials/footer%>
