@@ -13,11 +13,10 @@ const tokenSchema = new mongoose.Schema({
 	createdAt: { 
 		type: Date, 
 		required: true, 
-		default: Date.now, 
-		index:{
-			expires: 30
-		}
+		default: Date.now
 	}
 });
+
+tokenSchema.index({'createdAt':1},{expireAfterSeconds:300});
 
 module.exports = mongoose.model("Token", tokenSchema);
