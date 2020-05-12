@@ -15,7 +15,7 @@ const   express     	= require('express'),
 //========================================================================
 //Notifications page for user and path to get there.
 //========================================================================
-router.get('/', middlewareObj.isLoggedIn, async function(req, res) {
+router.get('/', middlewareObj.isLoggedIn, middlewareObj.isVerified, async function(req, res) {
 	try {
 		let user = await User.findById(req.user._id).populate({
 			path:'notifications',
@@ -43,7 +43,7 @@ router.get('/', middlewareObj.isLoggedIn, async function(req, res) {
 //============================================================================
 // handle notification
 //============================================================================
-router.get('/:id', middlewareObj.isLoggedIn, async function(req, res) {
+router.get('/:id', middlewareObj.isLoggedIn, middlewareObj.isVerified, async function(req, res) {
 	try {
 		let notification = await Notification.findById(req.params.id);
 		let campground = await Campgrounds.findById(notification.campground);

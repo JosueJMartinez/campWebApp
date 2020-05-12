@@ -164,18 +164,17 @@ sendEmail = (inputs, req, res) =>{
 //===============================================================
 //register routes
 //==============================================================
-router.get('/register',(req,res)=>{
+router.get('/register', middlewareObj.isVerified,(req,res)=>{
 	res.render('auth/register', {page:'register', form:true});
 });
 
-router.post('/register', uploadFile, (req, res)=>{
+router.post('/register', middlewareObj.isVerified, uploadFile, (req, res)=>{
 	var userWeb = req.body.user;
 	userWeb.username = req.body.username.trim();
 	if(req.body.password !== req.body.rePassword){
 		flashMessageObj.errorCampgroundMessage(req, res, "Passwords do not match up");
 	}else{
 		User.findOne({email:userWeb.email}, async (err, user)=>{
-			// eval(require('locus'));
 			
 			if(user){
 				console.log('user exists');
@@ -239,35 +238,44 @@ router.get('/confirmation/:token', (req, res, err)=>{
             user.isVerified = true;
             user.save(function (err) {
                 if (err) { return flashMessageObj.errorCampgroundMessage(req, res, err.message); }
+				if(req.user){
+					req.flash('success', 'congrats of verifying');
+					return res.redirect('/campgrounds');
+				}
 				req.flash('success','Account has been verified, please login');
                 res.redirect('/login');
             });
         });
     });
 });
+
+router.get('/resend', middlewareObj.isLoggedIn, (req, res)=>{
+	res.render('auth/resend',{user:{username:req.user.username, email:req.user.email}});
+});
+
 //=====================================================
 //resend email verification
-router.post('/resend', async (req, res)=>{
+router.post('/resend',  middlewareObj.isLoggedIn, async (req, res)=>{
 	try{
-		//im here trying to get email correct
-		let user = await User.findById(req.body.user_id,{email:1, isVerified:1});
-		
-		if (!user) return flashMessageObj.errorCampgroundMessage(req, res, 'We were unable to find user. Please try again');
-		if (user.isVerified) return flashMessageObj.errorCampgroundMessage(req, res, 'This account has already been verified. Please log in.');
+
+		if (req.user.isVerified) return flashMessageObj.errorCampgroundMessage(req, res, 'This account has already been verified.');
 		if(req.body.email){
 			let check = await User.find({email:req.body.email},{email:1});
-			if(check.email) return flashMessageObj.errorCampgroundMessage(req, res, 'This email already exists', '/resend');
-			user.email = req.body.email;
-			await user.save();
+			if(check.length!==0) {
+				return flashMessageObj.errorCampgroundMessage(req, res, 'This email already exists', '/resend');
+				
+			}
+			req.user.email = req.body.email;
+			await req.user.save();
 		}
 		
 
 		// Create a verification token, save it, and send email
-		var token = await new Token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') });
+		var token = await new Token({ _userId: req.user._id, token: crypto.randomBytes(16).toString('hex') });
 
 		// Save the token
 		await token.save();
-		await sendEmail({user, value:3, token},req, res);
+		await sendEmail({user:req.user, value:3, token},req, res);
 	}catch(err){
 		return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 	}
@@ -277,10 +285,16 @@ router.post('/resend', async (req, res)=>{
 //login routes
 //======================================================
 router.get('/login',(req,res)=>{
+	if(req.user){
+		return flashMessageObj.errorCampgroundMessage(req, res, 'Already logged in!', '/campgrounds');
+	}
 	res.render('auth/login', {page:'login', form:true});
 });
 
 router.post('/login', (req,res,next) => {
+	if(req.user){
+		return res.redirect(req, res, 'Already logged in!', '/campgrounds');
+	}
 	passport.authenticate('local', function(err, user, info) {
 		if (err) {
 			return flashMessageObj.errorCampgroundMessage(req, res, err.message);
@@ -288,12 +302,11 @@ router.post('/login', (req,res,next) => {
 		if (!user) {
 			return flashMessageObj.errorCampgroundMessage(req, res,'Account does not exist or password is not correct');
 		}
-		if(!user.isVerified){
-			return flashMessageObj.errorCampgroundMessage(req, res, `Account is for user ${user.username} not verified!`, `auth/resend`, {username: user.username, email:user.email, userId: user._id});
-		}
 		req.logIn(user, function(err) {
 			if (err) return flashMessageObj.errorCampgroundMessage(req, res, err.message);
-			
+			if(!user.isVerified){
+				return flashMessageObj.errorCampgroundMessage(req, res, `Account for user ${user.username} is not verified!`, `/resend`);
+			}
 			req.flash('success','Welcome back ' + user.username + '!');
 			return res.redirect('/campgrounds');
 		});
@@ -303,7 +316,7 @@ router.post('/login', (req,res,next) => {
 //===================================================
 //logout routes
 //===================================================
-router.get('/logout',(req,res)=>{
+router.get('/logout', (req,res)=>{
 	req.logout();
 	req.flash('success','You are now logged out');
 	res.redirect('/campgrounds');
@@ -312,11 +325,11 @@ router.get('/logout',(req,res)=>{
 //=================================================
 //forgot password routes
 //=================================================
-router.get('/forgot', (req, res)=>{
+router.get('/forgot', middlewareObj.isVerified, (req, res)=>{
 	res.render('auth/forgot', {form:true});
 });
 
-router.post('/forgot', (req, res, next)=>{
+router.post('/forgot', middlewareObj.isVerified, (req, res, next)=>{
 	async.waterfall([done =>{
 		crypto.randomBytes(20, (err, buf) =>{
 			var token = buf.toString('hex');
@@ -345,7 +358,7 @@ router.post('/forgot', (req, res, next)=>{
 	});
 });
 
-router.get('/reset/:token',(req, res) =>{
+router.get('/reset/:token', middlewareObj.isVerified, (req, res) =>{
 	User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() }}, (err, user) => {
     	if (!user) {
 			return flashMessageObj.errorCampgroundMessage(req, res, 'Password reset token is invalid or has expired.', '/forgot');
@@ -354,7 +367,7 @@ router.get('/reset/:token',(req, res) =>{
 	});
 });
 
-router.post('/reset/:token', function(req, res) {
+router.post('/reset/:token', middlewareObj.isVerified, function(req, res) {
 	async.waterfall([
     	function(done) {
       		User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now()}}, function(err, user) {
@@ -368,8 +381,7 @@ router.post('/reset/:token', function(req, res) {
 
 						user.save(function(err) {
 							req.logIn(user, function(err) {
-								// console.log(err, user);
-								// console.log(req.body);
+
 								done(err, user);
 							});
 						});
@@ -390,7 +402,7 @@ router.post('/reset/:token', function(req, res) {
 //=======================================================
 //User profile
 //=======================================================
-router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
+router.get('/userprofile', middlewareObj.isLoggedIn, middlewareObj.isVerified, (req, res, err) => {
 	Campgrounds.find({'author':req.user.id}, (err, campgrounds)=>{
 		if(err || !campgrounds){
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campground try again');
@@ -408,7 +420,7 @@ router.get('/userprofile', middlewareObj.isLoggedIn, (req, res, err) => {
 //===============================================
 //route for other users profiles
 //===============================================
-router.get('/profiles/:id', (req, res) => {
+router.get('/profiles/:id', middlewareObj.isVerified, (req, res) => {
 	User.findById(req.params.id).populate('followers').exec((err, user) => {
 		if (err || !user) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find missing profile try again later');

@@ -60,8 +60,18 @@ middlewareObj.isLoggedIn = (req, res, next) => {
         return next();
     }
 	return flashMessageObj.errorCampgroundMessage(req, res, 'Please login', '/login');
-
 };
+
+//=========================================================================
+//main functionality is to if user is logged in then to make 
+//sure verified access rest of site, the normal access for regular users
+middlewareObj.isVerified = async (req, res, next) =>{
+	
+	if((req.user && req.user.isVerified) || !req.user){
+		return next();
+	}
+	return flashMessageObj.errorCampgroundMessage(req, res, `${req.user.username} is not verified.`, `/resend`);
+}
 
 middlewareObj.checkReviewExistence = async (req, res, next) =>{
 	try{
@@ -85,6 +95,8 @@ middlewareObj.checkReviewExistence = async (req, res, next) =>{
 	}
 };
 
+//=================================================================
+//check if user is owner of comment
 middlewareObj.checkReviewOwnership = async (req, res, next) =>{
 	try{
 		if (req.isAuthenticated()) {

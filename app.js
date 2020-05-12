@@ -1,9 +1,5 @@
 /*
 	Things to do:
-	*	Work on notifications to remove them if comments, campgrounds, and reviews are deleted
-	*	Modify notification messages probably
-	*	Need to fix bug where token does not expire to verify new user
-	*	Need to do error checking for sign up with correct email address and username
 	*	Fix passport error messages
 	*	Update server side to check for valid inputs if client side javascript is turned off
 	*	Need to work in AJAX to make site more responsive
@@ -140,7 +136,7 @@ app.use('/notifications', notificationRoutes);
 
 
 //standard catch all route that does not exist
-app.get('*', (req, res) => {
+app.get('*', middlewareObj.isVerified, (req, res) => {
 	res.send('page does not exist');
 });
 

@@ -55,7 +55,7 @@ var geocoder = NodeGeocoder(options);
 //===============================================================
 //INDEX route - show all campgrounds
 //campgrounds page
-router.get('/', (req, res) => {
+router.get('/', middlewareObj.isVerified, (req, res) => {
 	if(req.query.search){
 		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
 		Campground.find({title: regex}, (err, campgrounds) => {
@@ -91,7 +91,7 @@ router.get('/', (req, res) => {
 //=================================================================
 //CREATE route - add new campgrounds to db
 //post to add new campgrounds
-router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
+router.post('/', middlewareObj.isLoggedIn, middlewareObj.isVerified, uploadFile, (req, res) => {
 	//get data from form and add to camgrounds database
 	//redirect back to campgrounds
 	//eval(require('locus'));
@@ -144,14 +144,14 @@ router.post('/', middlewareObj.isLoggedIn, uploadFile, (req, res) => {
 //=====================================================
 //NEW Route - show form to create new campgrounds
 //form used to add new campgrounds
-router.get('/new', middlewareObj.isLoggedIn, (req, res) => {
+router.get('/new', middlewareObj.isLoggedIn, middlewareObj.isVerified, (req, res) => {
 	res.render('campgrounds/new', {form:true});
 });
 
 //==============================================================
 //SHOW route - shows more info on a specific db collection item
 //need to make sure this after the NEW route or it will activate this route first
-router.get('/:id', (req, res) => {
+router.get('/:id', middlewareObj.isVerified, (req, res) => {
 	//find campground with provided ID
 	//render show template with that campground
 	Campground.findById(req.params.id).populate('author likes')
@@ -181,7 +181,7 @@ router.get('/:id', (req, res) => {
 
 //===================================================
 //EDIT route 
-router.get('/:id/edit', middlewareObj.checkOwnership, (req, res) => {
+router.get('/:id/edit', middlewareObj.isVerified, middlewareObj.checkOwnership, (req, res) => {
 	Campground.findById(req.params.id, (err, foundCampground) => {
 		res.render('campgrounds/edit', { campground: foundCampground, form:true });
 	});
@@ -189,7 +189,7 @@ router.get('/:id/edit', middlewareObj.checkOwnership, (req, res) => {
 
 //=========================================================================
 //UPDATE Route something is wrong here where I am not passing variables.
-router.put('/:id', middlewareObj.checkOwnership, uploadFile, (req, res) => {
+router.put('/:id', middlewareObj.isVerified, middlewareObj.checkOwnership, uploadFile, (req, res) => {
 	if (req.body.campground.price <= 0) {
 		return flashMessageObj.errorCampgroundMessage(req, res, 'Price is not above $0.00', '/campgrounds/' + req.params.id + '/edit');
 	}
@@ -230,7 +230,7 @@ router.put('/:id', middlewareObj.checkOwnership, uploadFile, (req, res) => {
 
 //=========================================================
 //DESTROY Route
-router.delete('/:id', middlewareObj.checkOwnership, (req, res) => {
+router.delete('/:id', middlewareObj.isVerified, middlewareObj.checkOwnership, (req, res) => {
 	Campground.findById(req.params.id, async (err, foundCampground) => {
 		if (err || !foundCampground) {
 			return flashMessageObj.errorCampgroundMessage(req, res, 'Could not delete campground');
@@ -257,7 +257,7 @@ router.delete('/:id', middlewareObj.checkOwnership, (req, res) => {
 //============================================================
 //Routes for Likes buttons
 //============================================================
-router.post('/:id/like', middlewareObj.isLoggedIn, async (req, res)=>{
+router.post('/:id/like', middlewareObj.isLoggedIn, middlewareObj.isVerified, async (req, res)=>{
 	try{
 		
 		let campground = await Campground.findById(req.params.id);

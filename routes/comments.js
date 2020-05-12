@@ -12,7 +12,7 @@ const   express     	= require('express'),
 //========================================
 //Index comment route
 //=========================================
-router.get('/', async (req, res)=>{
+router.get('/', middlewareObj.isVerified, async (req, res)=>{
 	try{
 		let campground = await Campground.findById(req.params.id).populate({
 			path:'comments',
@@ -27,7 +27,7 @@ router.get('/', async (req, res)=>{
 //=========================================
 //NEW route for comments
 //=========================================
-router.get('/new', middlewareObj.isLoggedIn, (req, res) => {
+router.get('/new', middlewareObj.isLoggedIn, middlewareObj.isVerified, (req, res) => {
 
 	//find campground by id
 	Campground.findById(req.params.id, (err, campground) => {
@@ -44,7 +44,7 @@ router.get('/new', middlewareObj.isLoggedIn, (req, res) => {
 //=============================================================
 //CREATE route for comments
 //=============================================================
-router.post('/', middlewareObj.isLoggedIn, (req, res) => {
+router.post('/', middlewareObj.isLoggedIn, middlewareObj.isVerified, (req, res) => {
 	Campground.findById(req.params.id, (err, foundCampground) => {
 		if (err || !foundCampground) {
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find campground');
@@ -73,7 +73,7 @@ router.post('/', middlewareObj.isLoggedIn, (req, res) => {
 
 //==============================================
 //EDIT route for comments
-router.get('/:comment_id/edit', middlewareObj.checkCommentOwnership, (req,res)=>{
+router.get('/:comment_id/edit', middlewareObj.isVerified, middlewareObj.checkCommentOwnership, (req,res)=>{
 	// console.log('test error here');
 	Comment.findById(req.params.comment_id,(err, foundComment)=>{
 		if(err || !foundComment){
@@ -85,7 +85,7 @@ router.get('/:comment_id/edit', middlewareObj.checkCommentOwnership, (req,res)=>
 });
 //=============================================
 //UPDATE Route comments
-router.put('/:comment_id', middlewareObj.checkCommentOwnership, (req,res)=>{
+router.put('/:comment_id', middlewareObj.isVerified, middlewareObj.checkCommentOwnership, (req,res)=>{
 	Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment,(err, foundComment)=>{
 		if(err || !foundComment){
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not update comment');
@@ -98,7 +98,7 @@ router.put('/:comment_id', middlewareObj.checkCommentOwnership, (req,res)=>{
 
 //=====================================================
 //DESTROY Route for comments
-router.delete('/:comment_id', middlewareObj.checkCommentOwnership,(req,res)=>{
+router.delete('/:comment_id', middlewareObj.isVerified, middlewareObj.checkCommentOwnership,(req,res)=>{
 	Comment.findById(req.params.comment_id,function(err, foundComment){
 		if(err ||!foundComment){
 			err.message = 'Could not delete comment';

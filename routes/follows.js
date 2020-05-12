@@ -11,7 +11,7 @@ const   express     	= require('express'),
 //========================================================================
 //follow user route path	
 //========================================================================
-router.get('/:id', middlewareObj.isLoggedIn, async (req, res)=>{
+router.get('/:id', middlewareObj.isLoggedIn, middlewareObj.isVerified, async (req, res)=>{
 	try{
 		let user = await User.findById(req.params.id);
 		user.followers.push(req.user._id);
@@ -23,7 +23,7 @@ router.get('/:id', middlewareObj.isLoggedIn, async (req, res)=>{
 	}
 });
 // working on removing a follower
-router.get('/:id/unfollow', middlewareObj.isLoggedIn, async (req, res)=>{
+router.get('/:id/unfollow', middlewareObj.isLoggedIn, middlewareObj.isVerified, async (req, res)=>{
 	try{
 		//need to find current user notifications
 		let follower = await User.findById(req.user.id,{notifications:1}).populate('notifications');

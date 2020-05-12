@@ -12,7 +12,7 @@ const 	express = 			require("express"),
 //========================================
 //Index get route for reviews
 //========================================
-router.get('/', async (req, res) =>{
+router.get('/', middlewareObj.isVerified, async (req, res) =>{
 	try{
 		let campground = await Campground.findById(req.params.id).populate({
 			path:'reviews',
@@ -28,7 +28,7 @@ router.get('/', async (req, res) =>{
 //========================================
 //New route for review page
 //========================================
-router.get('/new', middlewareObj.isLoggedIn, middlewareObj.checkReviewExistence, async (req, res)=>{
+router.get('/new', middlewareObj.isVerified, middlewareObj.checkReviewExistence, async (req, res)=>{
 	try{
 		let campground = await Campground.findById(req.params.id);
 		res.render('reviews/new', {campground});
@@ -40,7 +40,7 @@ router.get('/new', middlewareObj.isLoggedIn, middlewareObj.checkReviewExistence,
 //=========================================
 //Create route for a new review
 //=========================================
-router.post('/', middlewareObj.isLoggedIn, middlewareObj.checkReviewExistence, async (req, res)=>{
+router.post('/', middlewareObj.isVerified, middlewareObj.checkReviewExistence, async (req, res)=>{
 	try{
 		let campground = await Campground.findById(req.params.id).populate('reviews');
 		if(!campground){
@@ -83,7 +83,7 @@ router.get('/:review_id/edit', middlewareObj.checkReviewOwnership, async(req, re
 //update reviews working on adding reviews in show.ejs need to work reviews put update and delete
 //need to reformat reviews list
 //=========================================
-router.put('/:review_id', middlewareObj.checkReviewOwnership, async(req, res)=>{
+router.put('/:review_id', middlewareObj.isVerified, middlewareObj.checkReviewOwnership, async(req, res)=>{
 	try{
 		let review = await Review.findByIdAndUpdate(req.params.review_id,req.body.review);
 		if(!review){
@@ -103,7 +103,7 @@ router.put('/:review_id', middlewareObj.checkReviewOwnership, async(req, res)=>{
 //=====================================================================================
 //Destroy routes for review
 //=====================================================================================
-router.delete('/:review_id', middlewareObj.checkReviewOwnership, async(req, res)=>{
+router.delete('/:review_id', middlewareObj.isVerified, middlewareObj.checkReviewOwnership, async(req, res)=>{
 	try{
 		let review = await Review.findById(req.params.review_id);
 		if(!review){
