@@ -6,7 +6,7 @@ const 	mongoose = require('mongoose'),
 	  	TOOLS = require('../tools'),
 	  	tools = new TOOLS();
 
-//Schema setup
+//Schema setup nned to add storage for forecast!!
 const campGndSchema = new mongoose.Schema({
 	title: String,
 	img: String,

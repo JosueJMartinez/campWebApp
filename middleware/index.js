@@ -65,9 +65,9 @@ middlewareObj.isLoggedIn = (req, res, next) => {
 //=========================================================================
 //main functionality is to if user is logged in then to make 
 //sure verified access rest of site, the normal access for regular users
-middlewareObj.isVerified = async (req, res, next) =>{
+middlewareObj.isVerified = (req, res, next) =>{
 	
-	if((req.user && req.user.isVerified) || !req.user){
+	if((req.isAuthenticated() && req.user.isVerified) || !req.isAuthenticated()){
 		return next();
 	}
 	return flashMessageObj.errorCampgroundMessage(req, res, `${req.user.username} is not verified.`, `/resend`);

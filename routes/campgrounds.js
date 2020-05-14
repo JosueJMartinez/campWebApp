@@ -112,6 +112,7 @@ router.post('/', middlewareObj.isLoggedIn, middlewareObj.isVerified, uploadFile,
 				if(err){
 					return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 				}
+				//adding location weather here!!!
 				
 				var campground = {
 					title: req.body.campground.title,
