@@ -48,6 +48,7 @@ router.post('/', middlewareObj.isVerified, middlewareObj.checkReviewExistence, a
 		}
 		req.body.review.author = req.user._id;
 		req.body.review.campground = campground._id;
+		
 		let review = await Review.create(req.body.review);
 		campground.reviews.push(review);
 		let avgRating = tools.calcAvg(campground.reviews);

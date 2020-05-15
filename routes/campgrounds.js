@@ -166,6 +166,8 @@ router.get('/:id', middlewareObj.isVerified, (req, res) => {
 		}
 		else {
 			let isFollower = false;
+			let userReview;
+			
 			if(req.user){
 				for(const follower of foundCampground.author.followers){
 					if(req.user.id == follower){
@@ -173,9 +175,14 @@ router.get('/:id', middlewareObj.isVerified, (req, res) => {
 						break;
 					}
 				}
+				for(let i = 0; i < foundCampground.reviews.length; i++){
+					if( req.user.id == foundCampground.reviews[i].author._id+''){
+						userReview = foundCampground.reviews.splice(i, 1);
+						break;
+					}
+				}
 			}
-			
-			res.render('campgrounds/show', { campground: foundCampground, page:'show', isFollower });
+			res.render('campgrounds/show', { campground: foundCampground, page:'show', isFollower, userReview});
 		}
 	});
 });

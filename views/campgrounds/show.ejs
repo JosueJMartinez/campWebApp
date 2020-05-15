@@ -11,7 +11,7 @@
 					<h5 class='card-title display-4'>
 							<%=campground.title%>
 					</h5>
-					<div class='card-subtitle'>
+					<div class='card-subtitle border-bottom'>
 						<h4>
 							<% if(currentUser && (currentUser._id.equals(campground.author._id))){ %>
 									<a class='new-link' href='/userprofile'>
@@ -37,9 +37,7 @@
 						</h5>
 							
 					</div>
-					
-					<hr class="my-3">
-					<p>
+					<p class='pt-2'>
 						<%=campground.description%>
 					</p>
 					<p>
@@ -91,14 +89,25 @@
 				<div class='card-body'>
 					<div class='card-title'>
 						<div class="float-right">
-    						<a class="btn btn-sm btn-success pull-right" role="button" data-toggle="collapse" href="#collapseComment" aria-expanded="false" aria-controls="collapseComment">
-      <span class="far fa-plus-square" aria-hidden="true"></span> Add new comment</a>
+    						<a href="/campgrounds/<%= campground._id %>/comments"><i class="fa fa-search" aria-hidden="true"></i> See all comments</a>
 						</div>
 						<h3>
 							<span class='fas fa-comments'></span> Latest Comments:
 						</h3>
 					</div>
-					<div class="collapse" id="collapseComment">
+					
+					<div class='card-subtitle'>
+						
+						<div class='float-right'>
+							<a class="btn btn-sm btn-success pull-right" role="button" data-toggle="collapse" href="#collapseComment" aria-expanded="false" aria-controls="collapseComment">
+								<span class="far fa-plus-square" aria-hidden="true"></span> Add Comment</a>
+						</div>
+						<h5>
+							Total comments: <%= campground.comments.length %>
+						</h5>
+					</div>
+					
+					<div class="collapse pt-1" id="collapseComment">
 						<div class="card mb-3 submit-form">
 							<div class='card-body pb-1'>
 								<% if(!currentUser) { %>
@@ -134,18 +143,7 @@
 							</div>
 						</div>
 					</div>
-					<div class='card-subtitle'>
-						
-						<div class='float-right'>
-							<a href="/campgrounds/<%= campground._id %>/comments"><i class="fa fa-search" aria-hidden="true"></i> See all comments</a>
-							
-						</div>
-						<h5>
-							Total comments: <%= campground.comments.length %>
-						</h5>
-					</div>
-					<hr class='my-3'>
-					<ul class="list-unstyled">
+					<ul class="list-unstyled accordion pt-1" id='commentsAccordion'>
 						<% if (campground.comments.length === 0) { %>
 						<li class='media border alt-bg no-input col align-self-center'>
 							<em>No comments yet.</em>
@@ -154,7 +152,6 @@
 						<% let s = 1; campground.comments.slice(0, 5).forEach(function(comment){ %>
 						<li class="media border <%= (s%2!==0)?'alt-bg':''%>">
 							  <% s++ %>
-
 							<div class="media-body px-3 py-1">
 								<p class='float-right font-italic'>
 											<%= moment(comment.createdAt).fromNow()%>
@@ -174,7 +171,7 @@
 								</p>
 								<% if(currentUser && (currentUser.isAdmin || comment.author._id.equals(currentUser._id))){ %>
 									<div class='float-right'>
-										<a class='btn btn-sm btn-warning' role="button" data-toggle="collapse" href="#collapseEdit<%= comment._id %>" aria-expanded="false" aria-controls="collapse<%= comment._id %>">
+										<a class='btn btn-sm btn-warning collapsed' role="button" data-toggle="collapse" href="#collapseEdit<%= comment._id %>" aria-expanded="false" aria-controls="collapseEdit<%= comment._id %>">
 											<span class='fas fa-edit'></span> Edit
 										</a>
 										<form action='/campgrounds/<%=campground._id%>/comments/<%=comment._id%>?_method=DELETE' method='POST'>
@@ -183,69 +180,213 @@
 									</div>
 									
 								<% } %>
-								<p>
+								<p id='comment-Heading-<%= comment._id %>'>
 									<%=comment.text%>	
 								</p>
-								<div class="collapse" id="collapseEdit<%= comment._id %>">
-									<div class="card edit-form" style="">
-										<div class='card-body'>
-											<div class='card-title'>
-												<h5>Edit your comment
-													<span class="fas fa-edit" aria-hidden="true"></span>
-												</h5>
+								<% if(currentUser && (currentUser.isAdmin || comment.author._id.equals(currentUser._id))){ %>
+									<div class="collapse" id="collapseEdit<%= comment._id %>" aria-labelledby="'comment-Heading-<%= comment._id %>'" data-parent="#commentsAccordion">
+										<div class="card edit-form" style="">
+											<div class='card-body'>
+												<div class='card-title'>
+													<h5>Edit your comment
+														<span class="fas fa-edit" aria-hidden="true"></span>
+													</h5>
+												</div>
+
+												<form id="edit-comment-form<%= comment._id %>" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=PUT" method="POST">
+													<div class="form-group">
+														<input class="form-control" type="text" disabled value="<%= comment.author.username %>">
+													</div>
+													<div class="form-group">
+														<textarea class="form-control" name="comment[text]" placeholder="Your comment text..." form="edit-comment-form<%= comment._id %>" rows="5" cols="70"><%= comment.text %></textarea>
+													</div>
+													<div class="form-group">
+														<button class="btn btn-warning btn-sm">Edit Comment <span class="far fa-comment"></span>
+														</button>
+													</div>
+												</form>
 											</div>
-										
-											<form id="edit-comment-form<%= comment._id %>" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=PUT" method="POST">
-												<div class="form-group">
-													<input class="form-control" type="text" disabled value="<%= currentUser.username %>">
-												</div>
-												<div class="form-group">
-													<textarea class="form-control" name="comment[text]" placeholder="Your comment text..." form="edit-comment-form<%= comment._id %>" rows="5" cols="70"><%= comment.text %></textarea>
-												</div>
-												<div class="form-group">
-													<button class="btn btn-warning btn-sm">Edit Comment <span class="far fa-comment"></span>
-													</button>
-												</div>
-											</form>
 										</div>
 									</div>
-								</div>
+								<% } %>
 							</div>
 						</li>
 						<% }); %>
 					</ul>
 				</div>
 			</div>
+				
+				
 			<div class='card mt-1'>
 				<div class='card-body'>
 					<div class='card-title'>
+						<div class="float-right">
+							<a href="/campgrounds/<%= campground._id %>/reviews"><i class="fa fa-search" aria-hidden="true"></i> See all reviews</a>
+							
+						</div>
 						<h3>
 							Latest Reviews:
 						</h3>
 					</div>
-					<div class='card-subtitle'>
+					<div class='pb-1 card-subtitle'>
 						<div class='float-right'>
-							<% if(currentUser){ %>
-							<%let userReview = campground.reviews.find(review =>{ return review.author._id.equals(currentUser._id)}) %>
-								<% if(userReview){ %>
-										<a class="btn btn-warning btn-sm" href="/campgrounds/<%= campground._id %>/reviews/<%= userReview._id%>/edit">
-											<span class='fas fa-edit'></span> Edit Review
-										</a>
-								<% } else {%>
-										<a class="btn btn-primary btn-sm" href="/campgrounds/<%= campground._id %>/reviews/new">
-											Write a New Review
-										</a>
-								<% } %>
-                            	
+							<% if(!currentUser || !userReview) { %>
+								<a class="btn btn-sm btn-success pull-right" role="button" data-toggle="collapse" href="#collapseReview" aria-expanded="false" aria-controls="collapseReview">
+			  <span class="far fa-plus-square" aria-hidden="true"></span> Add Review</a>
+							<% } else {%>
+									<a class="btn btn-sm btn-warning pull-right" role="button" data-toggle="collapse" href="#collapseEditReview" aria-expanded="false" aria-controls="collapseEditReview"><span class='fas fa-edit'></span> Edit</a>
+									<form action='/campgrounds/<%=campground._id%>/reviews/<%=userReview[0]._id%>?_method=DELETE' method='POST'>
+										<button class='btn btn-sm btn-danger' data-backdrop="static" data-toggle="modal" data-target="#disableDelete"><span class="fas fa-trash-alt"></span> Delete</button>
+									</form>
 							<% } %>
-							<a href="/campgrounds/<%= campground._id %>/reviews"><i class="fa fa-search" aria-hidden="true"></i> See all reviews</a>
 						</div>
 						<h5>
 							Current campground rating: <strong><%= campground.rating.toFixed(2) %></strong>
-						</h5>
+						</h5>	
 					</div>
-					<hr class='my-3'>
-					<ul class="list-unstyled">
+					<% if(userReview){ %>
+						<div class="media border collapse show <%= (s%2!==0)?'alt-bg':''%>" id="collapseEditReview">
+							<%s++;%>
+							<div class="media-body px-3 py-1">
+								<div class='float-right font-italic'>
+									<%= moment(userReview[0].createdAt).fromNow()%>
+								</div>
+								<div>
+									<span class='h5'>
+									  <strong><a class='new-link' href="<%=(currentUser && (currentUser._id.equals(userReview[0].author._id))) ?'/userprofile' : '/profiles/'+userReview[0].author._id%>">Your Review</a></strong>
+									</span>	
+								</div>
+								<div class='d-inline'>
+									<%- '<span class="fas fa-star checked"></span>'.repeat(userReview[0].rating) %><%- '<span class="far fa-star checked"></span>'.repeat(5 - userReview[0].rating) %>
+								</div>
+									<p class='mt-1 d-inline pl-2'>
+										<%= userReview[0].text %>
+									</p>
+
+							</div>
+						</div>
+						<div class="collapse pt-1" id="collapseEditReview">
+							<div class="card mb-3 submit-form">
+								<div class='card-body pb-1'>
+									
+									<div class ='card-subtitle'>
+										<h4>Edit your review <span class="fas fa-pencil-alt" aria-hidden="true"></span>
+										</h4>
+									</div>
+									<div>
+										<form id="edit-review-form" action="/campgrounds/<%= campground._id %>/reviews/<%=userReview[0]._id%>?_method=PUT" method="POST">
+											<div class="form-group">
+												<input class="form-control" type="text" disabled value="<%= currentUser.username %>">
+											</div>
+											<div class='form-group'>
+												<div class="starrating risingstar d-flex flex-row-reverse float-left d-block mt-0 mb-1">
+
+													<input type="radio" id="star5" name="review[rating]" value="5" <%=(userReview[0].rating === 5) ? 'checked': ''%>/>
+													<label for="star5" title="5 star">
+														<span class="fas fa-star"></span>
+													</label>
+													<input type="radio" id="star4" name="review[rating]" value="4" <%=(userReview[0].rating === 4) ? 'checked': ''%>/>
+													<label for="star4" title="4 star">
+														<span class="fas fa-star"></span>
+													</label>
+													<input type="radio" id="star3" name="review[rating]" value="3" <%=(userReview[0].rating === 3) ? 'checked': ''%>/>
+													<label for="star3" title="3 star">
+														<span class="fas fa-star"></span>
+													</label>
+													<input type="radio" id="star2" name="review[rating]" value="2" <%=(userReview[0].rating === 2) ? 'checked': ''%>/>
+													<label for="star2" title="2 star">
+														<span class="fas fa-star"></span>
+													</label>
+													<input type="radio" id="star1" name="review[rating]" value="1" <%=(userReview[0].rating === 1) ? 'checked': ''%>/>
+													<label for="star1" title="1 star">
+														<span class="fas fa-star"></span>
+													</label>
+												</div>
+											</div>
+
+											<div class="form-group">
+												<textarea class="form-control" name="review[text]" placeholder="Write your review..." form="edit-review-form" rows="5" cols="70"><%=userReview[0].text%></textarea>
+											</div>
+											<div class="form-group">
+												<button class="btn btn-success btn-sm">Submit! <span class='fas fa-comment'></span>
+												</button>
+											</div>
+										</form>	
+									</div>
+
+									
+								</div>
+							</div>
+						</div>
+					<% } %>
+					<div class="collapse pt-1" id="collapseReview">
+						<div class="card mb-3 submit-form">
+							<div class='card-body pb-1'>
+								<% if(!currentUser) { %>
+									<!--If the user is not logged in, direct him to the login page i am working here-->
+									<div class = 'card-subtitle'>
+										<h5>You need to login before you can make a review.
+											<a href="/login">Click here</a> to go to the login page.
+										</h5>	
+									</div>
+								<% } %>
+								<% if(currentUser && !userReview) { %>
+								<!--If the user is logged in, show the new comment form-->
+									<div class ='card-subtitle'>
+										<h4>Write your review <span class="fas fa-pencil-alt" aria-hidden="true"></span>
+										</h4>
+									</div>
+									<div>
+										<form id="add-review-form" action="/campgrounds/<%= campground._id %>/reviews" method="POST">
+											<div class="form-group">
+												<input class="form-control" type="text" disabled value="<%= currentUser.username %>">
+											</div>
+											<div class='form-group'>
+												<div class="starrating risingstar d-flex flex-row-reverse float-left d-block mt-0 mb-1">
+
+													<input type="radio" id="star5" name="review[rating]" value="5"/>
+													<label for="star5" title="5 star"1>
+														<span class="fas fa-star"></span>
+													</label>
+													<input type="radio" id="star4" name="review[rating]" value="4"/>
+													<label for="star4" title="4 star">
+														<span class="fas fa-star"></span>
+													</label>
+													<input type="radio" id="star3" name="review[rating]" value="3"/>
+													<label for="star3" title="3 star">
+														<span class="fas fa-star"></span>
+													</label>
+													<input type="radio" id="star2" name="review[rating]" value="2"/>
+													<label for="star2" title="2 star">
+														<span class="fas fa-star"></span>
+													</label>
+													<input type="radio" id="star1" name="review[rating]" value="1"/>
+													<label for="star1" title="1 star">
+														<span class="fas fa-star"></span>
+													</label>
+												</div>
+											</div>
+
+											<div class="form-group">
+												<textarea class="form-control" name="review[text]" placeholder="Write your review..." form="add-review-form" rows="5" cols="70"></textarea>
+											</div>
+											<div class="form-group">
+												<button class="btn btn-success btn-sm">Review <span class='fas fa-comment'></span>
+												</button>
+											</div>
+										</form>	
+									</div>
+
+								<% } %>
+							</div>
+						</div>
+					</div>
+					<h5 class='pt-1'>
+						Reviews by other people:
+					</h5>
+					
+					
+					<ul class="list-unstyled pt-1">
 						<% if (campground.reviews.length === 0) { %>
 						<li class='media border alt-bg no-input col align-self-center'>
 							<em>No reviews yet.</em>
@@ -254,21 +395,22 @@
 						<% s = 1; campground.reviews.slice(0, 5).forEach(function(review){ %>
 						<li class="media border <%= (s%2!==0)?'alt-bg':''%>">
 							<%s++;%>
-							<div class="media-body col-3">
+							<div class="media-body px-3 py-1">
+								<div class='float-right font-italic'>
+									<%= moment(review.createdAt).fromNow()%>
+								</div>
 								<div>
+								  <span class='h5'>
+									  Review by: <strong><a class='new-link' href="<%=(currentUser && (currentUser._id.equals(review.author._id))) ?'/userprofile' : '/profiles/'+review.author._id%>"><%= review.author.username%></a></strong>
+									</span>	
+								</div>
+								<div class='d-inline'>
 									<%- '<span class="fas fa-star checked"></span>'.repeat(review.rating) %><%- '<span class="far fa-star checked"></span>'.repeat(5 - review.rating) %>
 								</div>
-								<div>
-									Review by: <strong><a class='new-link' href="<%=(currentUser && (currentUser._id.equals(review.author._id))) ?'/userprofile' : '/profiles/'+review.author._id%>"><%= review.author.username%></a></strong>
-								</div>
-								<div>
-									<%= moment(review.updatedAt).fromNow()%>
-								</div>
-							</div>
-							<div class='col-9'>
-								<p>
-									<%= review.text %>
-								</p>
+									<p class='mt-1 d-inline pl-2'>
+										<%= review.text %>
+									</p>
+								
 							</div>
 						</li>
 						<% }); %>
@@ -276,8 +418,6 @@
 					<a href='/campgrounds'>Go back</a>
 				</div>
 			</div>
-
-			
 		</div>
 	</div>
 		<!-- Campground Likes Modal -->
@@ -331,7 +471,10 @@
 			</div>
 		</div>
 	</div>
+	
 
+
+<%include ../partials/deleteModal%>
 
 	<script src='/scripts/show.js'></script>
 	<script>
