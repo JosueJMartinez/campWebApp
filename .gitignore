@@ -1,2 +1,6 @@
 .env
 /node_modules
+gulpfile.js
+views/updateDB.js
+views/test.ejs
+uploadFile/

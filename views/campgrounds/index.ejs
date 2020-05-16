@@ -19,17 +19,17 @@
 	<div class='row'>
 		<div class='col-lg-12'>
 			<h3>
-				Our Most Popular Camps
+				Our Camps
 			</h3>
 		</div>
 	</div>
-	<div class='card-columns'>
+	<div class='row row-cols-1 row-cols-md-2 row-cols-lg-3'>
 		<% campgrounds.forEach(camp=>{ %>
 			<div class='col mb-4'>
 				<div class='card bg-light'>
 					<img class="card-img-top img-thumbnail" src='<%=camp.img%>' alt='<%=camp.title%>'>
 					<div class="card-body text-center">
-						<h5 class="card-title">
+						<h5 class="card-title text-truncate">
 							<%=camp.title%>
 						</h5>
 						<p class="card-text">

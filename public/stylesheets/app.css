@@ -24,6 +24,12 @@ textarea{
 	resize:none;
 }
 
+img {
+    object-fit: cover;
+    height: 400px !important;
+    width: 30%;
+}
+
 .footer {
 	position: absolute;
 	bottom: 0;

@@ -38,17 +38,6 @@ router.get('/', middlewareObj.isVerified, async (req, res) =>{
 	}
 });
 
-//========================================
-//New route for review page
-//========================================
-router.get('/new', middlewareObj.isVerified, middlewareObj.checkReviewExistence, async (req, res)=>{
-	try{
-		let campground = await Campground.findById(req.params.id);
-		res.render('reviews/new', {campground});
-	}catch(err){
-		flashMessageObj.errorCampgroundMessage(req, res, err.message);
-	}
-});
 
 //=========================================
 //Create route for a new review
@@ -75,22 +64,6 @@ router.post('/', middlewareObj.isVerified, middlewareObj.checkReviewExistence, a
 	}
 });
 
-//============================================
-//Edit Route for reviews
-//============================================
-router.get('/:review_id/edit', middlewareObj.checkReviewOwnership, async(req, res)=>{
-	try{
-		let review = await Review.findById(req.params.review_id);
-		if(!review){
-			return flashMessageObj.errorCampgroundMessage(req, res, 'Could not find review!');
-		}
-		let campground = await Campground.findById(req.params.id);
-		//eval(require('locus'));
-		return res.render('reviews/edit',{campground_id:req.params.id, review});
-	}catch(err){
-		return flashMessageObj.errorCampgroundMessage(req, res, err.message);
-	}
-});
 
 //=========================================
 //Update route for Review

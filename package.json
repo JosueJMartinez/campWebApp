@@ -35,5 +35,10 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "weather-js": "^2.0.0"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-ejs": "^5.1.0",
+    "gulp-nodemon": "^2.5.0"
   }
 }

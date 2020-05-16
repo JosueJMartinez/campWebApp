@@ -24,22 +24,6 @@ router.get('/', middlewareObj.isVerified, async (req, res)=>{
 		flashMessageObj.errorCampgroundMessage(req, res, err.message);
 	}
 });
-//=========================================
-//NEW route for comments
-//=========================================
-router.get('/new', middlewareObj.isLoggedIn, middlewareObj.isVerified, (req, res) => {
-
-	//find campground by id
-	Campground.findById(req.params.id, (err, campground) => {
-		if (err || !campground) {
-			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find campground');
-		}
-		else {
-			res.render('comments/new', { campground: campground, form:true});
-		}
-	});
-
-});
 
 //=============================================================
 //CREATE route for comments
@@ -71,18 +55,6 @@ router.post('/', middlewareObj.isLoggedIn, middlewareObj.isVerified, (req, res) 
 	});
 });
 
-//==============================================
-//EDIT route for comments
-router.get('/:comment_id/edit', middlewareObj.isVerified, middlewareObj.checkCommentOwnership, (req,res)=>{
-	// console.log('test error here');
-	Comment.findById(req.params.comment_id,(err, foundComment)=>{
-		if(err || !foundComment){
-			flashMessageObj.errorCampgroundMessage(req, res, 'Could not find comment');
-		}else{
-			return res.render('comments/edit', {campground_id:req.params.id, comment:foundComment, form:true});
-		}
-	});
-});
 //=============================================
 //UPDATE Route comments
 router.put('/:comment_id', middlewareObj.isVerified, middlewareObj.checkCommentOwnership, (req,res)=>{
