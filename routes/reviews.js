@@ -14,12 +14,25 @@ const 	express = 			require("express"),
 //========================================
 router.get('/', middlewareObj.isVerified, async (req, res) =>{
 	try{
+		let userReview;
+		
 		let campground = await Campground.findById(req.params.id).populate({
 			path:'reviews',
 			options:{sort:{createdAt: -1}},
 			populate:{path:'author', select:'username'}
 		}).exec();
-		res.render("reviews/index", {campground});
+		
+		if(req.user){
+			
+			for(let i = 0; i < campground.reviews.length; i++){
+				if( req.user.id == campground.reviews[i].author._id+''){
+					userReview = campground.reviews.splice(i, 1);
+					break;
+				}
+			}
+		}
+		
+		res.render("reviews/index", {campground, userReview});
 	}catch(err){
 		flashMessageObj.errorCampgroundMessage(req, res, err.message);
 	}

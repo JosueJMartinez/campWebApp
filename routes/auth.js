@@ -108,6 +108,7 @@ sendEmail = (inputs, req, res) =>{
 		if (error) {
 			console.log(error);
 			console.log('test2');
+			return flashMessageObj.errorCampgroundMessage(req, res, 'Was  not able to verify set up for emails');
 			
 		} else {
 			console.log('Server is ready to take our messages');
@@ -154,7 +155,7 @@ sendEmail = (inputs, req, res) =>{
 				return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 			}
 			req.flash('success', 'A verification email has been sent to '+ inputs.user.email+'.');
-			res.redirect('/campgrounds');
+			res.redirect('/resend');
 		});
 	}
 
@@ -177,7 +178,6 @@ router.post('/register', middlewareObj.isVerified, uploadFile, (req, res)=>{
 		User.findOne({email:userWeb.email}, async (err, user)=>{
 			
 			if(user){
-				console.log('user exists');
 				flashMessageObj.errorCampgroundMessage(req, res, 'Already have an email that exists');
 			}else{
 				if(req.file){
@@ -408,10 +408,10 @@ router.get('/userprofile', middlewareObj.isLoggedIn, middlewareObj.isVerified, (
 			flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campground try again');
 		}else{
 			var haveCamps = checkObject(campgrounds);
-			Comments.find({'author':req.user.id}).populate('campground').exec((err, comments)=>{
+			Comments.find({'author':req.user.id}).populate('campground').exec(async (err, comments)=>{
 				if(err||!comments) return flashMessageObj.errorCampgroundMessage(req, res, 'Something went wrong finding the comments');
-				var haveComments = checkObject(comments);
-				res.render('userprofile', { campgrounds: campgrounds, haveCamps:haveCamps, page:'profile', haveComments, comments});
+				let reviews = await Review.find({'author':req.user.id}).populate({path:'campground', select:'title'}).exec();
+				res.render('userprofile', { campgrounds: campgrounds, haveCamps:haveCamps, page:'profile', comments, reviews});
 			});
 		}
 	});
@@ -431,9 +431,8 @@ router.get('/profiles/:id', middlewareObj.isVerified, (req, res) => {
 				}else{
 					var haveCamps = checkObject(campgrounds);
 					
-					Comments.find({'author':req.params.id}).populate('campground').exec((err, comments)=>{
+					Comments.find({'author':req.params.id}).populate('campground').exec(async (err, comments)=>{
 						if(err||!comments) return flashMessageObj.errorCampgroundMessage(req, res, 'Something went wrong finding the comments');
-						var haveComments = checkObject(comments);
 						let isFollower = false;
 						if(req.user){
 							for(const follower of user.followers){
@@ -444,7 +443,9 @@ router.get('/profiles/:id', middlewareObj.isVerified, (req, res) => {
 								}
 							}
 						}
-						res.render('profiles', {user: user, campgrounds: campgrounds, haveCamps: haveCamps, page:'profiles', haveComments, comments, isFollower});
+						let reviews = await Review.find({'author':req.params.id}).populate({path:'campground', select:'title'}).exec();
+						
+						res.render('profiles', {user: user, campgrounds: campgrounds, haveCamps: haveCamps, page:'profiles', comments, isFollower, reviews});
 					});
 				}
 			});

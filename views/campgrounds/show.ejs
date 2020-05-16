@@ -27,11 +27,11 @@
 							<% if(campground.reviews.length === 0){ %>
 									<em>No reviews yet</em>
 							<% } else{ %>
-									<span class="fa<%=((campground.rating>.75)||((campground.rating>=0.5)&&(campground.rating<=0.75)))? 's': 'r' %> fa-star<%=((campground.rating>=0.5)&&(campground.rating<=0.75))?'-half-alt':'' %> checked"></span>
-									<span class="fa<%=((campground.rating>1.75)||((campground.rating>=0.5)&&(campground.rating<=0.75)))? 's': 'r' %> fa-star<%=((campground.rating>=1.5)&&(campground.rating<=1.75))?'-half-alt':'' %> checked"></span>
-									<span class="fa<%=((campground.rating>2.75)||((campground.rating>=2.5)&&(campground.rating<=2.75)))? 's': 'r' %> fa-star<%=((campground.rating>=2.5)&&(campground.rating<=2.75))?'-half-alt':'' %> checked"></span>
-									<span class="fa<%=((campground.rating>3.75)||((campground.rating>=3.5)&&(campground.rating<=3.75)))? 's': 'r' %> fa-star<%=((campground.rating>=3.5)&&(campground.rating<=3.75))?'-half-alt':'' %> checked"></span>
-									<span class="fa<%=((campground.rating>4.75)||((campground.rating>=4.5)&&(campground.rating<=4.75)))? 's': 'r' %> fa-star<%=((campground.rating>=4.5)&&(campground.rating<=4.75))?'-half-alt':'' %> checked"></span>
+									<span class="fa<%=((campground.rating>.25))? 's': 'r' %> fa-star<%=((campground.rating>=0.25)&&(campground.rating<=0.75))?'-half-alt':'' %> checked"></span>
+									<span class="fa<%=((campground.rating>1.25))? 's': 'r' %> fa-star<%=((campground.rating>=1.25)&&(campground.rating<=1.75))?'-half-alt':'' %> checked"></span>
+									<span class="fa<%=((campground.rating>2.25))? 's': 'r' %> fa-star<%=((campground.rating>=2.25)&&(campground.rating<=2.75))?'-half-alt':'' %> checked"></span>
+									<span class="fa<%=((campground.rating>3.25))? 's': 'r' %> fa-star<%=((campground.rating>=3.25)&&(campground.rating<=3.75))?'-half-alt':'' %> checked"></span>
+									<span class="fa<%=((campground.rating>4.25))? 's': 'r' %> fa-star<%=((campground.rating>=4.25)&&(campground.rating<=4.75))?'-half-alt':'' %> checked"></span>
 							<% } %>
 							<em>(total reviews: <%= campground.reviews.length %>)</em>
 						</h5>
@@ -84,6 +84,7 @@
 					
 				</div>
 			</div>
+<!-- 		Comments sections		 -->
 			<div class='card mt-1'>
 				  
 				<div class='card-body'>
@@ -133,7 +134,7 @@
 												<textarea class="form-control" name="comment[text]" placeholder="Write your comment..." form="add-comment-form" rows="5" cols="70"></textarea>
 											</div>
 											<div class="form-group">
-												<button class="btn btn-success btn-sm">Comment <span class='fas fa-comment'></span>
+												<button class="btn btn-success btn-sm" data-target="#disableSubmit" data-backdrop="static" data-toggle="modal">Comment <span class='fas fa-comment'></span>
 												</button>
 											</div>
 										</form>	
@@ -201,7 +202,7 @@
 														<textarea class="form-control" name="comment[text]" placeholder="Your comment text..." form="edit-comment-form<%= comment._id %>" rows="5" cols="70"><%= comment.text %></textarea>
 													</div>
 													<div class="form-group">
-														<button class="btn btn-warning btn-sm">Edit Comment <span class="far fa-comment"></span>
+														<button class="btn btn-warning btn-sm" data-target="#disableSubmit" data-backdrop="static" data-toggle="modal">Edit Comment <span class="far fa-comment"></span>
 														</button>
 													</div>
 												</form>
@@ -216,7 +217,7 @@
 				</div>
 			</div>
 				
-				
+<!-- 		Review Section		 -->
 			<div class='card mt-1'>
 				<div class='card-body'>
 					<div class='card-title'>
@@ -266,7 +267,7 @@
 							</div>
 						</div>
 						<div class="collapse pt-1" id="collapseEditReview">
-							<div class="card mb-3 submit-form">
+							<div class="card mb-3 edit-form">
 								<div class='card-body pb-1'>
 									
 									<div class ='card-subtitle'>
@@ -308,7 +309,7 @@
 												<textarea class="form-control" name="review[text]" placeholder="Write your review..." form="edit-review-form" rows="5" cols="70"><%=userReview[0].text%></textarea>
 											</div>
 											<div class="form-group">
-												<button class="btn btn-success btn-sm">Submit! <span class='fas fa-comment'></span>
+												<button class="btn btn-warning btn-sm" data-target="#disableSubmit" data-backdrop="static" data-toggle="modal">Edit Review! <span class="far fa-comment"></span>
 												</button>
 											</div>
 										</form>	
@@ -371,7 +372,7 @@
 												<textarea class="form-control" name="review[text]" placeholder="Write your review..." form="add-review-form" rows="5" cols="70"></textarea>
 											</div>
 											<div class="form-group">
-												<button class="btn btn-success btn-sm">Review <span class='fas fa-comment'></span>
+												<button class="btn btn-success btn-sm" data-target="#disableSubmit" data-backdrop="static" data-toggle="modal">Review <span class='fas fa-comment'></span>
 												</button>
 											</div>
 										</form>	
@@ -382,7 +383,7 @@
 						</div>
 					</div>
 					<h5 class='pt-1'>
-						Reviews by other people:
+						Others:
 					</h5>
 					
 					
@@ -473,7 +474,7 @@
 	</div>
 	
 
-
+<%include ../partials/submitModal%>
 <%include ../partials/deleteModal%>
 
 	<script src='/scripts/show.js'></script>

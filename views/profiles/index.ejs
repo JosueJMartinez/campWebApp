@@ -1,103 +1,161 @@
 <%include ../partials/header %>
 	
-	<header class="jumbotron">
-		<div class='row'>
-			<div class='col-sm-8 order-3 order-sm-1'>
-				<h1 class='display-4'>
-					<%= user.username%>
-				</h1>
-				<p class='lead'>
-					Profile Information:
-				</p>
-				<p>
-					<ul class="list-group">
-						<li class="list-group-item"><%= user.firstName %> <%= user.lastName %></li>
-						<li class="list-group-item">Member since: <%= user.createdAt.getMonth() %>/<%=user.createdAt.getDate()%>/<%=user.createdAt.getFullYear()%></li>
-						<li class="list-group-item">Current email address:
-							<a href='mailto:<%= user.email %>'>
-								<%= user.email %>
-							</a>
-						</li>
-					</ul>
-				</p>
-				<% if(currentUser && !(user._id.equals(currentUser._id))){ %>
-					<% if(!isFollower){ %>
-						<a class='btn btn-sm btn-success' href='/follow/<%= user._id %>'>
-							Follow
-						</a>
-					<% }else{ %>
-						<a class='btn btn-sm btn-danger' href='/follow/<%= user._id %>/unfollow'>
-							Unfollow
-						</a>
-					<% } %>
-				<% } %>
-			</div>
-			<div class='col-sm-4 thumbnail order-sm-1'>
-				<img class='img-fluid img-thumbnail' src='<%= user.avatar %>' alt='Avatar image'>
-			</div>
-		</div>
-	</header>
-	<hr class='my-3'>
+<header class="jumbotron">
 	<div class='row'>
-		<h3 class='col'>
-			Posted campgrounds:
-		</h3>
+		<div class='col-sm-8 order-3 order-sm-1'>
+			<h1 class='display-4'>
+				<%= user.username%>
+			</h1>
+			<p class='lead'>
+				Profile Information:
+			</p>
+			<p>
+				<ul class="list-group">
+					<li class="list-group-item"><%= user.firstName %> <%= user.lastName %></li>
+					<li class="list-group-item">Member since: <%= user.createdAt.getMonth() %>/<%=user.createdAt.getDate()%>/<%=user.createdAt.getFullYear()%></li>
+					<li class="list-group-item">Current email address:
+						<a href='mailto:<%= user.email %>'>
+							<%= user.email %>
+						</a>
+					</li>
+				</ul>
+			</p>
+			<% if(currentUser && !(user._id.equals(currentUser._id))){ %>
+				<% if(!isFollower){ %>
+					<a class='btn btn-sm btn-success' href='/follow/<%= user._id %>'>
+						Follow
+					</a>
+				<% }else{ %>
+					<a class='btn btn-sm btn-danger' href='/follow/<%= user._id %>/unfollow'>
+						Unfollow
+					</a>
+				<% } %>
+			<% } %>
+		</div>
+		<div class='col-sm-4 thumbnail order-sm-1'>
+			<img class='img-fluid img-thumbnail' src='<%= user.avatar %>' alt='Avatar image'>
+		</div>
 	</div>
-	
-	<div class='card-columns'>
-		<%if(haveCamps){%>
-			<% campgrounds.forEach(camp=>{ %>
-				<div class='col mb-4'>
-					<div class='card bg-light'>
-						<img class="card-img-top img-thumbnail" src='<%=camp.img%>' alt='<%=camp.title%>'>
-						<div class="card-body text-center">
-							<h5 class="card-title">
-								<%=camp.title%>
-							</h5>
-							<a href='/campgrounds/<%=camp._id%>' class='btn btn-sm btn-outline-primary'>More Info</a>
+</header>
+<hr class='my-3'>
+<div class='row'>
+	<h3 class='col'>
+		Posted campgrounds:
+	</h3>
+</div>
 
-						</div>
+<div class='card-columns'>
+	<%if(haveCamps){%>
+		<% campgrounds.forEach(camp=>{ %>
+			<div class='col mb-4'>
+				<div class='card bg-light'>
+					<img class="card-img-top img-thumbnail" src='<%=camp.img%>' alt='<%=camp.title%>'>
+					<div class="card-body text-center">
+						<h5 class="card-title">
+							<%=camp.title%>
+						</h5>
+						<a href='/campgrounds/<%=camp._id%>' class='btn btn-sm btn-outline-primary'>More Info</a>
+
 					</div>
 				</div>
-			<% }); %>
-		<% } else{ %>
-			<div class='col mb-4'>
-				No Campgrounds found!
 			</div>
-		<% } %>
-	</div>
-	<hr class='my-3'>
-	<h3>
-		Comment History:
-	</h3>
-	<%if(haveComments){%>
-		
-		<ul class='list-unstyled'>
-			<% let t = 1; comments.forEach(comment=>{ %>
-			<li class="media border <%= (t%2!==0)?'alt-bg':''%>">
-				<% t++; %>
-				<div class="col-3">
-					<img src="<%= comment.campground.img %>" class= "mr-3 img-fluid img-thumbnail" alt="<%=comment.campground.title %>'s image ">  
-				</div>
-				<div class="media-body col-9">
-					<p class="mt-0 mb-1">
-						<span class="h5">
-							<a href=<%='/campgrounds/'+comment.campground._id%>><%= comment.campground.title %></a>
-						</span>
-						<span class='float-right'>
-							<%= moment(comment.campground.createdAt).fromNow()%>
-						</span>
+		<% }); %>
+	<% } else{ %>
+		<div class='col mb-4'>
+			No Campgrounds found!
+		</div>
+	<% } %>
+</div>
+<div class='card mt-1'>
+				  
+	<div class='card-body'>
+		<div class='card-title'>
+			<h3>
+				<span class='fas fa-comments'></span> Comments:
+			</h3>
+		</div>
+
+		<div class='card-subtitle'>
+			<h5>
+				Total comments: <%= comments.length %>
+			</h5>
+		</div>
+
+
+		<ul class="list-unstyled accordion pt-1" id='commentsAccordion'>
+			<% if (comments.length === 0) { %>
+			<li class='media border alt-bg no-input col align-self-center'>
+				<em>No comments yet.</em>
+			</li>	
+			<% } %>
+			<% let s = 1; comments.forEach(function(comment){ %>
+			<li class="media border <%= (s%2!==0)?'alt-bg':''%>">
+				  <% s++ %>
+				<div class="media-body px-3 py-1">
+					<p class='float-right font-italic'>
+								<%= moment(comment.createdAt).fromNow()%>
+
 					</p>
 					<p>
-						<%=comment.text;%>
+					  	<span class='h5'>
+						  	<span class="h5">
+								<i class="fas fa-campground"></i>: <a href=<%='/campgrounds/'+comment.campground._id%>><%= comment.campground.title %></a>
+							</span>
+						</span>
+
+					</p>
+					<p id='comment-Heading-<%= comment._id %>'>
+						<%=comment.text%>	
 					</p>
 				</div>
 			</li>
 			<% }); %>
 		</ul>
-	<% } else{ %>
-		<div class='col mb-4'>
-				No Comments found!
-			</div>
-		<% } %>
+	</div>
+</div>
+
+<div class='card mt-1'>
+	<div class='card-body'>
+		<div class='card-title'>
+			<h3>
+				<span class='fas fa-comments'></span> Latest Reviews:
+			</h3>
+		</div>
+		<div class='pb-1 card-subtitle'>
+			<h5>
+				Total Reviews: <strong><%= reviews.length %></strong>
+			</h5>	
+		</div>
+		<ul class="list-unstyled pt-1">
+			<% if (reviews.length === 0) { %>
+			<li class='media border alt-bg no-input col align-self-center'>
+				<em>No reviews yet.</em>
+			</li>	
+			<% } %>
+			<% s = 1; reviews.forEach(function(review){ %>
+			<li class="media border <%= (s%2!==0)?'alt-bg':''%>">
+				<%s++;%>
+				<div class="media-body px-3 py-1">
+					<div class='float-right font-italic'>
+						<%= moment(review.createdAt).fromNow()%>
+					</div>
+					<div>
+					  <span class='h5'>
+						  <i class="fas fa-campground"></i> <strong><a href=<%='/campgrounds/'+review.campground._id%>><%= review.campground.title %></a></strong>
+						</span>	
+					</div>
+					<div class='d-inline'>
+						<%- '<span class="fas fa-star checked"></span>'.repeat(review.rating) %><%- '<span class="far fa-star checked"></span>'.repeat(5 - review.rating) %>
+					</div>
+						<p class='mt-1 d-inline pl-2'>
+							<%= review.text %>
+						</p>
+
+				</div>
+			</li>
+			<% }); %>
+		</ul>
+		<a href='/campgrounds'>Go back</a>
+	</div>
+</div>
 <%include ../partials/footer%>

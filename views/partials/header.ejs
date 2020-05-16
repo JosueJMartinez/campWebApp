@@ -29,8 +29,27 @@
 			</ul>
 			<ul class="navbar-nav ">
 				<% if(!currentUser){ %>
-					<li class = "nav-item <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">
-						<a class="nav-link" href="/login"><span class='fas fa-user'></span> Login</a>
+					<li class = "nav-item dropdown <%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						 <i class="fas fa-user"></i> Login
+						</a>
+						<div class="dropdown-menu" aria-labelledby="navbarDropdown" action='/login' method='POST'>
+						   <form class="px-4 py-3" action='/login' method='POST'>
+							<div class="form-group">
+							  <!-- <label for='username'>Username</label> -->
+							  <input id= 'username' class='form-control' type='text' name='username' placeholder='Username'>
+							</div>
+							<div class="form-group">
+							  <!-- <label for="exampleDropdownFormPassword1">Password</label> -->
+							  <input id='password' class='form-control' type='password' name='password' placeholder='Password'>
+							</div>
+							<button class='btn btn-lg btn-primary btn-block' data-backdrop="static" data-toggle="modal" data-target="#disable">
+								Login!
+							</button>
+						  </form>
+						  <div class="dropdown-divider"></div>
+						  <a class="dropdown-item" href="/forgot">Forgot password?</a>
+						</div>
 					</li>
 					<li class="nav-item <%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>">
 						<a class="nav-link" href="/register"><span class='fas fa-user-plus'></span> Sign Up</a>
@@ -68,7 +87,7 @@
 					</li>
 
 					<li class='nav-item'>
-						<a class="nav-link" href="/logout">Log Out</a>
+						<a class="nav-link" href="/logout" data-backdrop="static" data-toggle="modal" data-target="#disableLogOut">Log Out</a>
 					</li>
 				<% }%>
 
