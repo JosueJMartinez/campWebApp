@@ -35,12 +35,12 @@
 			</h3>
 		</div>
 	</div>
-	<div class='card-columns'>
+	<div class='row row-cols-1 row-cols-md-2 row-cols-lg-3'>
 		<%if(haveCamps){%>
 			<% campgrounds.forEach(camp=>{ %>
 				<div class='col mb-4'>
 					<div class='card bg-light'>
-						<img class="card-img-top img-thumbnail" src='<%=camp.img%>' alt='<%=camp.title%>'>
+						<img class="card-img-top img-thumbnail image-card-resize" src='<%=camp.img%>' alt='<%=camp.title%>'>
 						<div class="card-body text-center">
 							<h5 class="card-title">
 								<%=camp.title%>

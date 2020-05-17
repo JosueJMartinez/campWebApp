@@ -24,10 +24,10 @@ textarea{
 	resize:none;
 }
 
-img {
+.image-card-resize {
     object-fit: cover;
-    height: 400px !important;
-    width: 30%;
+    height: 300px !important;
+    width: 100%;
 }
 
 .footer {
@@ -108,7 +108,7 @@ div a + form {
 	background: #c0c0c0;
 }
 
-@media (min-width: 992px) {
+/* @media (min-width: 992px) {
 	.card-columns {
 		column-count: 4;
 	}
@@ -122,4 +122,4 @@ div a + form {
 	.card-columns {
 		column-count: 2;
 	}
-}
+} */

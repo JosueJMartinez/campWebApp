@@ -27,7 +27,7 @@
 		<% campgrounds.forEach(camp=>{ %>
 			<div class='col mb-4'>
 				<div class='card bg-light'>
-					<img class="card-img-top img-thumbnail" src='<%=camp.img%>' alt='<%=camp.title%>'>
+					<img class="card-img-top img-thumbnail image-card-resize" src='<%=camp.img%>' alt='<%=camp.title%>'>
 					<div class="card-body text-center">
 						<h5 class="card-title text-truncate">
 							<%=camp.title%>
@@ -57,5 +57,6 @@
 			</div>
 		<%})%>
 	</div>
+<%include ../partials/pageNav%>
 
 <%include ../partials/footer%>

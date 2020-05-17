@@ -56,32 +56,42 @@ var geocoder = NodeGeocoder(options);
 //INDEX route - show all campgrounds
 //campgrounds page
 router.get('/', middlewareObj.isVerified, (req, res) => {
+	let perPage = 6,
+	pageQuery = parseInt(req.query.page),
+	pageNumber = pageQuery ? pageQuery : 1;
 	if(req.query.search){
 		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-		Campground.find({title: regex}, (err, campgrounds) => {
+		Campground.find({title: regex}).skip((perPage * pageNumber) - perPage).limit(perPage).populate('author').exec( async (err, campgrounds) => {
 			if (err || !campgrounds) {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campgrounds try again later');
 			}
 			else {
-				if(campgrounds.length < 1){
-					flashMessageObj.errorCampgroundMessage(req, res, 'Could not find any campgrounds please search again','/campgrounds');
-				}else{
-					res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds'});	
+				try{
+					if(campgrounds.length < 1){
+					 	return flashMessageObj.errorCampgroundMessage(req, res, 'Could not find any campgrounds please search again','/campgrounds'); 
+					}
+					let count = await Campground.count({title: regex}).exec();
+					return res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds', current:pageNumber, pages: Math.ceil(count/perPage), search: req.query.search});
+				}catch(err){
+					return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 				}
-				
 			}
 		});
 		
 	}else{
-		Campground.find({}).populate('author').exec((err, campgrounds) => {
+		
+		Campground.find({}).skip((perPage * pageNumber) - perPage).limit(perPage).populate('author').exec(async (err, campgrounds) => {
 			if (err || !campgrounds) {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campgrounds try again later');
 			}
 			else {
-				//console.log(campgrounds);
-				// eval(require('locus'));
-			
-				res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds'});
+				try{
+					let count = await Campground.count({}).exec();
+					res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds', current:pageNumber, pages: Math.ceil(count/perPage), search: false});
+				}catch(err){
+					flashMessageObj.errorCampgroundMessage(req, res, 'Something went wrong with the page counter');
+				}
+				
 			}
 		});
 	}
