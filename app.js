@@ -141,6 +141,6 @@ app.get('*', middlewareObj.isVerified, (req, res) => {
 });
 
 //server listens on here
-app.listen(process.env.PORT || 3000,  () => {
+app.listen(process.env.PORT || 3000, process.env.IP, () => {
 	console.log('YelpCamp App started on port: ' + process.env.PORT + ' at IP: ' + process.env.IP);
 });
