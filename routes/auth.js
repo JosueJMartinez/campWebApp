@@ -183,7 +183,9 @@ router.post('/register', middlewareObj.isVerified, uploadFile, (req, res)=>{
 				if(req.file){
 					try{
 						
-						let result = await cloudinary.v2.uploader.upload(req.file.path);
+						let result = await cloudinary.v2.uploader.upload(req.file.path,{moderation: "aws_rek"});
+						if(result.moderation[0].status==='rejected') return flashMessageObj.errorCampgroundMessage(req, res, 'Image is explicit', '/register');
+				
 						userWeb.avatar = result.secure_url;
 						userWeb.avatarId = result.public_id;
 					}catch(err){

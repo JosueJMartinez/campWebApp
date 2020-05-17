@@ -1,16 +1,18 @@
 <%include ../partials/header%>
 	<div class='row justify-content-center'>
 		<div class='col-12 mt-4 text-center'>
-			<h2>
+			<h4>
+				Hello <%= user.username %>, please check <%=user.email %> for a verification link.
 				
-				Hello <%= user.username %>, please verify email
-			</h2>
+			</h4>
+			<p>
+				 Not your email? <a role="button" data-toggle="collapse" href="#collapseV" aria-expanded="false" aria-controls="collapseV">Click here</a> to resubmit email.
+			</p>
 		</div>
-		<div class='col-7'>
+		<div class='col-7 collapse' id='collapseV'>
 			<form action='/resend' method='POST'>
 				<div class='form-group'>
-					<label for='email'> If <%= user.email%> not correct enter a new one</label>
-					<input id= 'email' class='form-control' type='email' name='email' placeholder='Enter new Email'>
+					<input id= 'email' class='form-control' type='email' name='email' placeholder='<%= user.email %>'>
 				</div>
 				<div class='form-group'>
 					<button class='btn btn-lg btn-primary btn-block' data-backdrop="static" data-toggle="modal" data-target="#disable">

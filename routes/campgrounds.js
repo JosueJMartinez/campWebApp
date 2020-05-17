@@ -62,6 +62,7 @@ router.get('/', middlewareObj.isVerified, (req, res) => {
 	if(req.query.search){
 		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
 		Campground.find({title: regex}).skip((perPage * pageNumber) - perPage).limit(perPage).populate('author').exec( async (err, campgrounds) => {
+			if(campgrounds.length )
 			if (err || !campgrounds) {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campgrounds try again later');
 			}
@@ -70,8 +71,15 @@ router.get('/', middlewareObj.isVerified, (req, res) => {
 					if(campgrounds.length < 1){
 					 	return flashMessageObj.errorCampgroundMessage(req, res, 'Could not find any campgrounds please search again','/campgrounds'); 
 					}
-					let count = await Campground.count({title: regex}).exec();
-					return res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds', current:pageNumber, pages: Math.ceil(count/perPage), search: req.query.search});
+					
+					let count = await Campground.countDocuments({title: regex}).exec();
+					let pages =  Math.ceil(count/perPage);
+					
+					if(pageQuery>pages){
+						return flashMessageObj.errorCampgroundMessage(req, res, 'Went beyond the last index page', '/campgrounds');
+					}
+					
+					return res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds', current:pageNumber, pages, search: req.query.search});
 				}catch(err){
 					return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 				}
@@ -86,8 +94,15 @@ router.get('/', middlewareObj.isVerified, (req, res) => {
 			}
 			else {
 				try{
-					let count = await Campground.count({}).exec();
-					res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds', current:pageNumber, pages: Math.ceil(count/perPage), search: false});
+					let count = await Campground.countDocuments({}).exec();
+					
+					let pages =  Math.ceil(count/perPage);
+					
+					if(pageQuery>pages){
+						return flashMessageObj.errorCampgroundMessage(req, res, 'Went beyond the last index page','/campgrounds');
+					}
+					
+					res.render('campgrounds/index', { campgrounds: campgrounds, currentUser: req.user, page:'campgrounds', current:pageNumber, pages, search: false});
 				}catch(err){
 					flashMessageObj.errorCampgroundMessage(req, res, 'Something went wrong with the page counter');
 				}
@@ -111,19 +126,18 @@ router.post('/', middlewareObj.isLoggedIn, middlewareObj.isVerified, uploadFile,
 	else {
 		//steps made to get location for google maps and store it into database
 		geocoder.geocode(req.body.campground.location, (err, data) => {
-			// 	console.log(req.body.campground.location);
-			// 	console.log(data);
-			//	console.log(!data.length);
 			if (err || !data.length) {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Invalid Address');
 			}
 			
-			cloudinary.v2.uploader.upload(req.file.path, function(err, result) {
+			cloudinary.v2.uploader.upload(req.file.path, {moderation: "aws_rek"},function(err, result) {
 				if(err){
 					return flashMessageObj.errorCampgroundMessage(req, res, err.message);
 				}
 				//adding location weather here!!!
-				
+				if(result.moderation[0].status==='rejected'){
+					return flashMessageObj.errorCampgroundMessage(req, res, 'Image is explicit', '/campgrounds/new');
+				}
 				var campground = {
 					title: req.body.campground.title,
 					description: req.body.campground.description,
@@ -228,8 +242,13 @@ router.put('/:id', middlewareObj.isVerified, middlewareObj.checkOwnership, uploa
 			if(req.file){
 				//delete image if new one is uploaded and then upload new one to cloudinary
 				try{
+					let result = await cloudinary.v2.uploader.upload(req.file.path, {moderation: "aws_rek"});
+					if(result.moderation[0].status==='rejected'){
+						return flashMessageObj.errorCampgroundMessage(req, res, 'Image is explicit', `/campgrounds/${req.params.id}/edit`);
+					}
+					
 					await cloudinary.v2.uploader.destroy(updateCampground.img_id);
-					let result = await cloudinary.v2.uploader.upload(req.file.path);
+					
 					req.body.campground.img = result.secure_url;
 					req.body.campground.img_id = result.public_id;
 				}catch(err){
