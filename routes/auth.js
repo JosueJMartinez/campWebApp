@@ -214,10 +214,7 @@ router.post('/register', middlewareObj.isVerified, uploadFile, (req, res)=>{
 				}
 				var newUser = new User(userWeb);
 
-				//eval(require('locus'));
-				console.log(req.body.adminCode+'' == process.env.ADMIN_PW+'');
-				console.log(req.body.adminCode, typeof req.body.adminCode);
-				console.log(process.env.ADMIN_PW, typeof process.env.ADMIN_PW);
+
 				if(req.body.adminCode+'' == process.env.ADMIN_PW+''){
 					newUser.isAdmin = true;
 				}
