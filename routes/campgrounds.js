@@ -63,7 +63,7 @@ router.get('/', middlewareObj.isVerified, (req, res) => {
 		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
 		Campground.find({title: regex}).skip((perPage * pageNumber) - perPage).limit(perPage).populate('author').exec( async (err, campgrounds) => {
 			if(campgrounds.length < 1){
-					return flashMessageObj.errorCampgroundMessage(req, res, `Could not find any campgrounds by the name of ${regex}`,'/campgrounds');
+					return flashMessageObj.errorCampgroundMessage(req, res, `Could not find any campgrounds by the name of ${req.query.search}`,'/campgrounds');
 				}
 			if (err || !campgrounds) {
 				flashMessageObj.errorCampgroundMessage(req, res, 'Could not connect to campgrounds try again later');
