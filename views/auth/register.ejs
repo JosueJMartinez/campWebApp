@@ -6,18 +6,18 @@
 			</h2>
 		</div>
 		<div class='col-7'>
-			<form action='/register' method='POST' enctype='multipart/form-data'>
+			<form id='registerForm'action='/register' method='POST' enctype='multipart/form-data'>
 				<div class='form-group'>
 					<label for='newusername'>Username</label>
 					<input required id= 'newusername' class='form-control' type='text' name='username' placeholder='Username'>
 				</div>
 				<div class='form-group'>
-					<label for='password1'>Password</label>
+					<label for='newpassword'>Password</label>
 					<input required id='newpassword' class='form-control' type='password' name='password' placeholder='Password'>
 				</div>
 				<div class='form-group'>
 					<label for='rePassword'>Re-type Password</label>
-					<input required id='newPassword' class='form-control' type='password' name='rePassword' placeholder='Retype Password'>
+					<input required id='rePassword' class='form-control' type='password' name='rePassword' placeholder='Retype Password'>
 				</div><div class='form-group'>
 					<label for='email'>Email</label>
 					<input required id= 'email' class='form-control' type='email' name='user[email]' placeholder='email'>
