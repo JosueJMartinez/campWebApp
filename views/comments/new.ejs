@@ -7,7 +7,7 @@
 		</div>
 		<div class='col-7'>
 	
-			<form action='/campgrounds/<%=campground._id%>/comments' method='POST'>
+			<form class='forms-validating' action='/campgrounds/<%=campground._id%>/comments' method='POST'>
 				<div class='form-group'>
 					<label for="comment">Leave a Comment</label>
 					<textarea id="comment" rows='5' class='form-control' name='comment[text]' placeholder='Add a new comment'></textarea>

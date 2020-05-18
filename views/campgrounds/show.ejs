@@ -126,7 +126,7 @@
 										</h4>
 									</div>
 									<div>
-										<form id="add-comment-form" action="/campgrounds/<%= campground._id %>/comments" method="POST">
+										<form class='forms-validating' id="add-comment-form" action="/campgrounds/<%= campground._id %>/comments" method="POST">
 											<div class="form-group">
 												<input class="form-control" type="text" disabled value="<%= currentUser.username %>">
 											</div>
@@ -194,7 +194,7 @@
 													</h5>
 												</div>
 
-												<form id="edit-comment-form<%= comment._id %>" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=PUT" method="POST">
+												<form class='forms-validating' id="edit-comment-form<%= comment._id %>" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=PUT" method="POST">
 													<div class="form-group">
 														<input class="form-control" type="text" disabled value="<%= comment.author.username %>">
 													</div>
@@ -275,7 +275,7 @@
 										</h4>
 									</div>
 									<div>
-										<form id="edit-review-form" action="/campgrounds/<%= campground._id %>/reviews/<%=userReview[0]._id%>?_method=PUT" method="POST">
+										<form class='forms-validating' id="edit-review-form" action="/campgrounds/<%= campground._id %>/reviews/<%=userReview[0]._id%>?_method=PUT" method="POST">
 											<div class="form-group">
 												<input class="form-control" type="text" disabled value="<%= currentUser.username %>">
 											</div>
@@ -338,7 +338,7 @@
 										</h4>
 									</div>
 									<div>
-										<form id="add-review-form" action="/campgrounds/<%= campground._id %>/reviews" method="POST">
+										<form class='forms-validating' id="add-review-form" action="/campgrounds/<%= campground._id %>/reviews" method="POST">
 											<div class="form-group">
 												<input class="form-control" type="text" disabled value="<%= currentUser.username %>">
 											</div>

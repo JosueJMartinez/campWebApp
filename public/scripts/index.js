@@ -1,7 +1,7 @@
 
 $('.validate').click(function(){
 	
-	if(!$("#registerForm").valid()){
+	if(!$(".forms-validating").valid()){
 		console.log('test');
 		return false;
 	}	

@@ -116,7 +116,7 @@
 							</h4>
 						</div>
 						<div>
-							<form id="add-review-form" action="/campgrounds/<%= campground._id %>/reviews" method="POST">
+							<form class='forms-validating' id="add-review-form" action="/campgrounds/<%= campground._id %>/reviews" method="POST">
 								<div class="form-group">
 									<input class="form-control" type="text" disabled value="<%= currentUser.username %>">
 								</div>

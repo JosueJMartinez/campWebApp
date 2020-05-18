@@ -6,7 +6,7 @@
 			</h2>
 		</div>
 		<div class='col-7'>
-			<form action='/campgrounds/<%=campground._id%>?_method=PUT' method='POST' enctype='multipart/form-data'>
+			<form class='forms-validating' action='/campgrounds/<%=campground._id%>?_method=PUT' method='POST' enctype='multipart/form-data'>
 				<div class='form-group'>
 					<label for="title">Title</label>
 					<input required class='form-control' type='text' name='campground[title]' id='title' value='<%=campground.title%>'>
