@@ -190,6 +190,7 @@ router.post('/register', middlewareObj.isVerified, uploadFile, (req, res)=>{
 	if(req.body.password !== req.body.rePassword){
 		flashMessageObj.errorCampgroundMessage(req, res, "Passwords do not match up");
 	}else{
+		
 		User.findOne({email:userWeb.email}, async (err, user)=>{
 			
 			if(user){
@@ -197,7 +198,7 @@ router.post('/register', middlewareObj.isVerified, uploadFile, (req, res)=>{
 			}else{
 				if(req.file){
 					try{
-						//
+						
 						let result = await cloudinary.v2.uploader.upload(req.file.path, {moderation: "aws_rek"});
 						if(result.moderation[0].status==='rejected') return flashMessageObj.errorCampgroundMessage(req, res, 'Image is explicit', '/register');
 				

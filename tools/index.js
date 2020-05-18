@@ -94,18 +94,10 @@ Tools.prototype.pullUsersNotifications = async(notes) =>{
 	}
 }
 
-// Tools.prototype.findUserReview = (reviews, user) =>{
-// 	if(user){
-// 		let filtered = {};
-// 		for(let i = 0; i < reviews.length; i++){
-// 			if( user.id == reviews[i].author._id+''){
-// 				filtered.userReview = reviews.splice(i, 1);
-// 				break;
-// 			}
-// 		}
-// 		filtered.reviews = reviews;
-// 		return filtered;
-// 	}		
-// }
+Tools.prototype.validateEmail = (email) => {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
 
 module.exports = Tools;
