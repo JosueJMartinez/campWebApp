@@ -157,6 +157,21 @@ sendEmail = (inputs, req, res) =>{
 			req.flash('success', 'A verification email has been sent to '+ inputs.user.email+'.');
 			res.redirect('/resend');
 		});
+	}else{
+		var mailOptions = {
+			to: inputs.user.email,
+			from: process.env.EMAIL,
+			subject: 'Account Verification for YelpCamp',
+			text: 'Hello,\n\n' +
+			  'Please verify your account by clicking on this link: \n http:\/\/' + req.headers.host + '\/confirmation\/' + inputs.token.token + '.\n'
+		};
+		smtpTransport.sendMail(mailOptions, function(err) {
+			if(err){
+				return flashMessageObj.errorCampgroundMessage(req, res, err.message);
+			}
+			req.flash('success', 'A verification email has been sent to '+ inputs.user.email+'.');
+			res.redirect(`/verification?user=${inputs.user.username}&email=${inputs.user.email}`);
+		});
 	}
 
 }
@@ -182,8 +197,8 @@ router.post('/register', middlewareObj.isVerified, uploadFile, (req, res)=>{
 			}else{
 				if(req.file){
 					try{
-						
-						let result = await cloudinary.v2.uploader.upload(req.file.path,{moderation: "aws_rek"});
+						//
+						let result = await cloudinary.v2.uploader.upload(req.file.path, {moderation: "aws_rek"});
 						if(result.moderation[0].status==='rejected') return flashMessageObj.errorCampgroundMessage(req, res, 'Image is explicit', '/register');
 				
 						userWeb.avatar = result.secure_url;
@@ -213,7 +228,7 @@ router.post('/register', middlewareObj.isVerified, uploadFile, (req, res)=>{
 						});
 						token.save(err =>{
 							if(err){return flashMessageObj.errorCampgroundMessage(req, res, err.message);}
-							sendEmail({user, value:3, token},req, res);
+							sendEmail({user, value:4, token},req, res);
 						})
 					}
 
@@ -249,6 +264,13 @@ router.get('/confirmation/:token', (req, res, err)=>{
             });
         });
     });
+});
+
+router.get('/verification', (req, res)=>{
+	if(req.query.user && req.query.email){
+		return res.render('auth/verification',{user:req.query.user, email:req.query.email});	
+	}
+	res.render('/campgrounds/index');
 });
 
 router.get('/resend', middlewareObj.isLoggedIn, (req, res)=>{

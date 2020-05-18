@@ -1,0 +1,30 @@
+<%include ../partials/header%>
+	<div class='row justify-content-center'>
+		<div class='col-12 mt-4 text-center'>
+			<h4>
+				Hello <%= user %>, please check <%= email %> for a verification link.
+				
+			</h4>
+			<p>
+				 Not your email? Please login to enter a new email.
+			</p>
+		</div>
+	</div>
+	<div id="disable" class="modal fade" role="dialog" tabindex="-1">
+		<div class="modal-dialog text-center" role='document'>
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header mx-auto">
+					<h4 class="modal-title">Sending email to verify again</h4>
+				</div>
+				<div class="modal-body">
+					<div class="spinner-border" role="status">
+  						<span class="sr-only">Loading...</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<%include ../partials/footer%>
